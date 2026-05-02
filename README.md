@@ -1,7 +1,7 @@
-# Claude Code: Complete Configuration Guide (March 2026)
+# Claude Code: Complete Configuration Guide (May 2026)
 
 > A comprehensive, tech-stack-agnostic guide for configuring Claude Code from scratch.
-> Compiled from official Anthropic documentation, community best practices, and verified against current sources (March 2026).
+> Compiled from official Anthropic documentation, community best practices, and verified against current sources (May 2026, Claude Code 2.1.x).
 
 ---
 
@@ -48,6 +48,27 @@ The guide is organized in four phases:
 2. **Core tooling second** — Plugins, MCP servers, and hooks are *infrastructure*. Install them before writing custom skills or agents, because plugins often bundle skills, agents, and MCP servers that would otherwise require manual creation. Hooks enforce deterministic automation that Claude cannot "forget."
 3. **Project-specific third** — Custom skills, subagents, and commands fill gaps not covered by plugins. Creating them after plugin installation avoids duplication.
 4. **Advanced workflows last** — Context management, parallel workflows, CI/CD, and deployment are refinements you add once the foundation is solid.
+
+---
+
+## What's New in Claude Code 2.1.x (May 2026)
+
+If you're updating an existing setup based on an earlier revision of this guide, these are the meaningful changes since March 2026:
+
+| Area | Change | See |
+|------|--------|-----|
+| **CLAUDE.md size** | Anthropic's own team targets ~100 lines / 2,500 tokens. 200 is the ceiling, not the goal. | Step 1 |
+| **Auto memory** | Claude Code 2.1.59+ writes its own learnings to `~/.claude/projects/<project>/memory/MEMORY.md`. On by default. | Step 1 §Auto Memory |
+| **`/init` interactive flow** | `CLAUDE_CODE_NEW_INIT=1 claude` enables a multi-phase init that explores, asks questions, and proposes files for review. | Step 1 §`/init` |
+| **AGENTS.md import** | Cross-tool compatibility with Cursor / Aider / OpenCode via `@AGENTS.md` from CLAUDE.md. | Step 1 §AGENTS.md |
+| **HTML comment stripping** | `<!-- ... -->` comments in CLAUDE.md are stripped before injection — free maintainer notes. | Step 1 §Guidelines |
+| **`memory:` field syntax** | Subagent `memory:` takes `user`/`project`/`local`, not a directory path. Common mistake in older guides. | Step 8 §Persistent Memory |
+| **`disable-model-invocation` is skill-only** | No effect on slash commands in `.claude/commands/`. | Step 9 §Note |
+| **Auto permission mode** | `claude --permission-mode auto` — classifier reviews tool calls, prompts only on risk. | Step 3 §Auto Permission Mode |
+| **`claudeMdExcludes`** | Skip noisy ancestor CLAUDE.md files in monorepos. | Step 11 §Excluding noisy CLAUDE.md files |
+| **`/memory`, `/btw`, `/rewind`** | New built-in commands worth knowing. | Useful Built-in Commands Reference |
+| **`--continue` / `--resume`** | Conversation persistence across terminal restarts. | CLI Flags Worth Knowing |
+| **Hook events expanded** | The hook event table now includes `InstructionsLoaded`, `PreCompact`/`PostCompact`, `WorktreeCreate`/`WorktreeRemove`, `Elicitation`, etc. | Step 6 §Hook Events |
 
 ---
 
@@ -155,12 +176,13 @@ CLAUDE.md is loaded into every request. It defines what Claude always knows abou
 
 ### Guidelines
 
-- **Keep it under 200 lines** — bloated CLAUDE.md files cause Claude to ignore instructions. The previous recommendation of 500 lines was too generous; shorter files get better adherence.
+- **Target ~100 lines, hard cap 200.** Anthropic's official docs say "target under 200 lines"; the Claude Code team's own CLAUDE.md (per Boris Cherny) sits around 100 lines / 2,500 tokens. Treat 100 as the goal and 200 as the ceiling — bloated CLAUDE.md files cause Claude to ignore instructions.
 - For each line, ask: *"Would removing this cause Claude to make mistakes?"* If not, cut it.
 - Move reference material to skills (on-demand loading).
 - Use imperative language: "Use X" and "Never do Y" — not "It would be nice if..."
 - State what NOT to do — prohibitions are more valuable than suggestions.
 - Use `@path/to/file` import syntax to reference other files without duplicating content.
+- **HTML comments are stripped** before CLAUDE.md is injected into Claude's context. Use `<!-- maintainer notes -->` for human-only annotations (TODOs, attribution, review reminders) that don't cost tokens.
 
 ### Template: Root CLAUDE.md
 
@@ -269,6 +291,48 @@ See @README.md for project overview.
 See @docs/api-spec.md for API documentation.
 See @package.json for available commands.
 ```
+
+### AGENTS.md — Cross-Tool Compatibility
+
+If your repo also uses `AGENTS.md` for other coding agents (Cursor, Aider, OpenCode, etc.), import it from `CLAUDE.md` so both tools share the same source of truth without duplication:
+
+```markdown
+@AGENTS.md
+
+## Claude Code
+
+Claude-specific overrides go here.
+```
+
+Claude reads `CLAUDE.md`, not `AGENTS.md` directly — but `@AGENTS.md` import works because Claude expands imports at load time. This is the cleanest cross-tool pattern.
+
+### `/init` — Interactive Project Setup
+
+For a new or unfamiliar project, prefer `/init` over hand-writing CLAUDE.md from scratch. The classic flow uses heuristics; the new interactive flow (Claude Code 2.1.x) spawns a subagent that explores the codebase, asks follow-up questions, and proposes CLAUDE.md, skills, and hooks for review:
+
+```bash
+CLAUDE_CODE_NEW_INIT=1 claude
+> /init
+```
+
+If a `CLAUDE.md` already exists, `/init` suggests improvements rather than overwriting it.
+
+### Auto Memory (Claude Code 2.1.59+)
+
+Alongside the CLAUDE.md you write, Claude can write notes for itself across sessions. The auto-memory directory is **machine-local** at `~/.claude/projects/<project>/memory/`, where `<project>` is derived from the git repo (so all worktrees share one memory dir).
+
+- **Default: on.** Toggle in-session via `/memory`, or persistently via `autoMemoryEnabled: false` in user/local settings.
+- **What's loaded at session start:** the first 200 lines / 25KB of `MEMORY.md` (an index Claude maintains). Topic files (`debugging.md`, `api-conventions.md`, etc.) load on demand.
+- **What Claude saves:** Build commands it figured out, debugging insights, code-style preferences observed from your corrections, workflow habits. It decides what's worth keeping.
+- **Audit:** Run `/memory` to browse, open files in your editor, or toggle the feature. All files are plain markdown.
+- **Disable via env var:** `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`.
+- **Custom location:** `autoMemoryDirectory` setting (accepted from policy / local / user settings — *not* project, by design, so a malicious project can't redirect writes).
+
+CLAUDE.md is what *you* tell Claude. Auto memory is what *Claude tells itself* about your project. They complement each other and both load into every session.
+
+#### Subagent memory
+
+Subagents have their own auto-memory directory (per-subagent). This is enabled via `memory:` in subagent frontmatter — see Step 8.
 
 ---
 
@@ -500,6 +564,16 @@ This means deny rules always win. Even if `Bash(git *)` is allowed, `Bash(git pu
 
 When Claude asks for permission and you approve, the approval goes to `settings.local.json`. Project-level permissions in `settings.json` apply to everyone.
 
+### Auto Permission Mode
+
+Beyond per-tool allowlists, Claude Code 2.1.x ships an `auto` permission mode where a classifier model reviews each tool call and prompts only on risky ones (scope escalation, unknown infrastructure, hostile-content-driven actions):
+
+```bash
+claude --permission-mode auto
+```
+
+For non-interactive runs (`-p`), if the classifier repeatedly blocks actions there's no user to fall back to, so auto mode aborts. Use it for routine work where you trust the general direction but don't want to click through every step. For full sandboxing (filesystem and network restrictions), use `/sandbox` instead.
+
 ---
 
 # Phase 2: Core Tooling
@@ -523,6 +597,8 @@ Plugins are installed interactively inside a Claude Code session using `/plugin`
 The `/plugin` command opens an interactive UI with four tabs: **Discover**, **Installed**, **Marketplaces**, and **Errors**.
 
 **Important:** Always include the `@marketplace` suffix when installing. For example, `/plugin install superpowers@superpowers-marketplace`, NOT `/plugin install superpowers`.
+
+**Verify plugin names before installing.** The official Anthropic plugin catalog evolves quickly and plugin names listed in older guides (including this one) may have been renamed or removed. Before running an `install` command, run `/plugin marketplace browse <marketplace>` interactively to confirm the plugin is published under the name you expect. The `boostvolt/claude-code-lsps` and `obra/superpowers-marketplace` marketplaces are third-party (not in Anthropic's official plugin docs) but are widely used and well-maintained.
 
 ### What Plugins Can Provide
 
@@ -631,7 +707,7 @@ The hackathon-winning configuration (50K+ GitHub stars) with 13 agents, 40+ skil
 /plugin install everything-claude-code@everything-claude-code
 ```
 
-**Caution:** As of March 2026, this plugin has active installation issues — the Claude plugin validator enforces strict constraints that can cause failures. If installation fails, cherry-pick individual skills via `npx skills add` instead (see Step 7).
+**Caution:** As of May 2026, this plugin has had active installation issues — the Claude plugin validator enforces strict constraints that can cause failures. If installation fails, cherry-pick individual skills via `npx skills add` instead (see Step 7).
 
 ### Plugin Budget
 
@@ -809,7 +885,7 @@ Hooks go in `settings.json` (project or global):
 
 | Variable | Description |
 |----------|-------------|
-| `$CLAUDE_PROJECT_DIR` | Root directory of the project |
+| `$CLAUDE_PROJECT_DIR` | Root directory of the project (set in practice; not yet listed in the official env-var docs as of May 2026 — for portability use `git rev-parse --show-toplevel` as a fallback) |
 
 Tool input is passed via **stdin as JSON** with fields like `tool_name`, `tool_input.file_path`, `tool_input.command`, etc.
 
@@ -1223,7 +1299,9 @@ model: sonnet          # or: opus, haiku, inherit
 tools: Read, Grep, Glob, Bash, Write, Edit    # limit to what's needed
 # skills:             # optional: preload skills into subagent context
 #   - skill-name
-# memory: .claude/agent-memory/agent-name/  # persistent cross-session memory
+# memory: project     # persistent cross-session memory: user | project | local
+                       # directory is auto-managed at .claude/agent-memory/<name>/ (project)
+                       # or ~/.claude/agent-memory/<name>/ (user)
 # permission_mode: default  # default, acceptEdits, dontAsk, bypassPermissions, plan
 ---
 
@@ -1263,16 +1341,24 @@ This is one of the most impactful cost optimizations — main session on Opus fo
 
 ### Persistent Memory
 
-The `memory` field gives a subagent a persistent directory that survives across conversations:
+The `memory` field gives a subagent a persistent directory that survives across conversations. Valid values are `user`, `project`, or `local` — the directory is auto-managed by Claude Code at the corresponding location:
 
 ```yaml
 ---
 name: code-reviewer
-memory: .claude/agent-memory/code-reviewer/
+memory: project   # values: user | project | local
 ---
 ```
 
+| Value | Directory | Shared with |
+|-------|-----------|-------------|
+| `user` | `~/.claude/agent-memory/<name>/` | All projects on your machine |
+| `project` | `.claude/agent-memory/<name>/` | Team (committed to git) |
+| `local` | `.claude/agent-memory-local/<name>/` | Just you on this machine (gitignore it) |
+
 The subagent can read/write to this directory to build up knowledge over time — codebase patterns, debugging insights, architectural decisions.
+
+**Common error:** the older convention of writing a directory path as the value (e.g., `memory: .claude/agent-memory/code-reviewer/`) is *not* the documented syntax. Use the keyword (`user|project|local`); Claude Code handles the path.
 
 ### Agent Teams
 
@@ -1309,7 +1395,7 @@ description: |
   3+ files, require architecture decisions, or need refactoring strategy.
 model: opus
 tools: Read, Grep, Glob
-memory: .claude/agent-memory/planner/
+memory: project
 ---
 
 You are an expert planning specialist. Decompose complex requirements into
@@ -1430,13 +1516,14 @@ Commands live in `.claude/commands/` as markdown files. Since commands and skill
 ---
 description: Brief description shown in command picker
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
-# disable-model-invocation: true   # Only manual invocation
 ---
 
 [Instructions for Claude when this command is invoked]
 
 $ARGUMENTS — this variable contains whatever the user types after the command
 ```
+
+**Note on `disable-model-invocation`.** This frontmatter field is **skill-only** as of Claude Code 2.1.x — it has no effect on plain slash commands in `.claude/commands/`. Slash commands are user-invoked by default; Claude doesn't auto-invoke them. If you genuinely need a manual-only workflow with frontmatter enforcement, define it as a skill in `.claude/skills/<name>/SKILL.md` and set `disable-model-invocation: true` there.
 
 ### Recommended Commands
 
@@ -1446,7 +1533,6 @@ $ARGUMENTS — this variable contains whatever the user types after the command
 ---
 description: Run the full verification loop (build, types, lint, test, security, diff)
 allowed-tools: Read, Grep, Glob, Bash
-disable-model-invocation: true
 ---
 
 Run the verification loop skill. Execute all 6 phases and produce the report.
@@ -1627,6 +1713,21 @@ monorepo/
     └── shared/CLAUDE.md      # Shared package rules (~50 lines)
 ```
 
+#### Excluding noisy CLAUDE.md files
+
+In a large monorepo, ancestor CLAUDE.md files from other teams may bleed into your context. Use `claudeMdExcludes` in `.claude/settings.local.json` (or any settings layer) to skip them by absolute-path glob:
+
+```json
+{
+  "claudeMdExcludes": [
+    "**/monorepo/CLAUDE.md",
+    "/home/alex/monorepo/other-team/.claude/rules/**"
+  ]
+}
+```
+
+Patterns match against absolute paths. Arrays merge across user / project / local / managed-policy layers. Managed-policy CLAUDE.md files cannot be excluded — that's by design for org-wide compliance instructions.
+
 ### If You Must Use Separate Repos
 
 #### Option A: `--add-dir`
@@ -1751,7 +1852,6 @@ Generate React/Next.js components from text descriptions or design screenshots.
 ---
 description: Build, verify, and deploy to Vercel
 allowed-tools: Read, Grep, Glob, Bash
-disable-model-invocation: true
 ---
 
 Deploy the project to Vercel: $ARGUMENTS
@@ -1826,6 +1926,9 @@ jobs:
 | Command | What It Does |
 |---------|-------------|
 | `/help` | Show available commands |
+| `/init` | Generate or refine CLAUDE.md (set `CLAUDE_CODE_NEW_INIT=1` for interactive multi-phase flow) |
+| `/memory` | Browse loaded CLAUDE.md / rules / auto-memory files; toggle auto-memory; open files in editor |
+| `/btw` | Ask a side question — answer appears in a dismissible overlay and never enters context |
 | `/hooks` | Interactive hook configurator |
 | `/mcp` | Show MCP server status and token costs |
 | `/plugins` | List installed plugins |
@@ -1835,7 +1938,7 @@ jobs:
 | `/compact` | Manual context compression |
 | `/clear` | Clear conversation (start fresh) |
 | `/fork` | Fork conversation for parallel work |
-| `/rewind` | Return to previous conversation state |
+| `/rewind` | Restore conversation/code/both to a prior checkpoint (also `Esc Esc`) |
 | `/resume` | Resume a previous session |
 | `/rename` | Name current session for later resumption |
 | `/checkpoints` | File-level rollback points |
@@ -1844,10 +1947,24 @@ jobs:
 | `/add-dir` | Add another directory to workspace |
 | `/agents` | Manage subagents |
 | `/permissions` | Review and modify permissions |
+| `/sandbox` | Toggle OS-level filesystem/network sandboxing for the session |
 | `/batch` | Large-scale parallel changes across worktrees |
 | `/simplify` | Review changes for quality and efficiency |
 | `/debug` | Troubleshoot session issues |
 | `/loop` | Run prompts on recurring intervals |
+
+### CLI Flags Worth Knowing
+
+| Flag | Purpose |
+|------|---------|
+| `claude --continue` | Resume the most recent conversation |
+| `claude --resume` | Pick from a list of recent conversations |
+| `claude --add-dir <path>` | Add a directory to the workspace at launch |
+| `claude --permission-mode auto` | Auto-approval mode: a classifier model reviews tool calls and only prompts on risky ones |
+| `claude -p "<prompt>"` | Non-interactive single-shot mode (CI/CD, pre-commit) |
+| `claude -p "..." --output-format json` | Structured output for scripts |
+| `claude -p "..." --output-format stream-json` | Streaming output for real-time processing |
+| `claude --append-system-prompt "..."` | Add system-prompt-level instruction (stronger than CLAUDE.md, must be passed every invocation) |
 
 ---
 
@@ -1925,15 +2042,19 @@ jobs:
 ### Official Documentation
 - [Claude Code Best Practices](https://code.claude.com/docs/en/best-practices)
 - [Extend Claude Code (Features Overview)](https://code.claude.com/docs/en/features-overview)
-- [CLAUDE.md / Memory](https://code.claude.com/docs/en/memory)
+- [CLAUDE.md / Memory (incl. auto memory + `.claude/rules/`)](https://code.claude.com/docs/en/memory)
 - [Skills](https://code.claude.com/docs/en/skills)
-- [Subagents](https://code.claude.com/docs/en/sub-agents)
+- [Subagents (incl. `memory:` field)](https://code.claude.com/docs/en/sub-agents)
 - [Hooks Guide](https://code.claude.com/docs/en/hooks-guide)
-- [Hooks Reference](https://code.claude.com/docs/en/hooks)
+- [Hooks Reference (12+ lifecycle events)](https://code.claude.com/docs/en/hooks)
 - [MCP](https://code.claude.com/docs/en/mcp)
+- [Permission Modes (incl. auto mode)](https://code.claude.com/docs/en/permission-modes)
+- [Sandboxing](https://code.claude.com/docs/en/sandboxing)
+- [Checkpointing & `/rewind`](https://code.claude.com/docs/en/checkpointing)
 - [Plugins — Discover](https://code.claude.com/docs/en/discover-plugins)
 - [Plugins — Create](https://code.claude.com/docs/en/plugins)
 - [Settings](https://code.claude.com/docs/en/settings)
+- [CLI Reference](https://code.claude.com/docs/en/cli-reference)
 
 ### Official Repositories
 - [Anthropic Official Plugins Directory](https://github.com/anthropics/claude-plugins-official)
