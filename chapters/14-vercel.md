@@ -1,0 +1,79 @@
+# Chapter 14: Vercel Integration — Skills, MCP & Deployment
+
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against Vercel official docs (last updated 2026-06-11) and Anthropic docs, July 2026
+>
+> **Previous:** [Editors & CI/CD](13-editors-cicd.md) · **Next:** [Reference](15-reference.md)
+
+Three complementary integrations, in order of usefulness:
+
+## 14.1: Vercel Agent Skills
+
+```bash
+npx skills add vercel-labs/agent-skills
+```
+
+The repo (actively maintained, ~28k stars) currently ships 10 skills, including:
+
+| Skill | What It Provides |
+|-------|-----------------|
+| **react-best-practices** | React/Next.js performance rules (waterfalls, bundle size, SSR, re-renders) |
+| **web-design-guidelines** | Accessibility, performance, UX rules |
+| **composition-patterns** | Compound components, API design, avoiding boolean props |
+| **writing-guidelines** | Prose/documentation style |
+| **vercel-deploy-claimable** | One-command deploy with a claimable preview URL |
+| **vercel-optimize**, **react-native-guidelines**, **react-view-transitions**, … | See the repo |
+
+Note the CLI is `npx skills add` (the older `npx add-skill` form is deprecated — use one consistently).
+
+## 14.2: Vercel MCP Server (Official)
+
+Vercel's official remote MCP with OAuth, at `https://mcp.vercel.com`:
+
+```bash
+claude mcp add --transport http vercel https://mcp.vercel.com
+# then inside the session:
+/mcp     # authenticate via OAuth
+```
+
+Capabilities (per Vercel docs, June 2026): search Vercel documentation, **manage teams/projects/deployments**, and analyze deployment logs. Public docs-search tools work without auth; management tools require the OAuth login. It grants the agent the same access as your Vercel user account, so keep human confirmation on for deploy/change operations.
+
+Alternatively there's an official Claude Code plugin that bundles the connection:
+
+```
+/plugin install vercel@claude-plugins-official
+```
+
+Choose plugin **or** manual MCP — not both.
+
+## 14.3: Custom Deploy Skill
+
+`.claude/skills/deploy/SKILL.md`:
+
+```yaml
+---
+name: deploy
+description: Build, verify, and deploy to Vercel
+allowed-tools: Read, Grep, Glob, Bash
+disable-model-invocation: true
+---
+
+Deploy the project to Vercel: $ARGUMENTS
+
+1. Run the full build
+2. Run type checker
+3. Run linter
+4. Run test suite
+5. If ANY step fails, STOP. Do not deploy broken code.
+6. Run `vercel --prod` for production or `vercel` for preview
+7. Report deployment URL and status
+```
+
+`disable-model-invocation: true` matters here: you decide when to deploy, never Claude.
+
+---
+
+**Sources:**
+- [Vercel MCP (official docs)](https://vercel.com/docs/agent-resources/vercel-mcp)
+- [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
+
+**Next:** [Chapter 15: Reference →](15-reference.md)
