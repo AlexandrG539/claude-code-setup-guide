@@ -1,6 +1,6 @@
 # Chapter 14: Vercel Integration — Skills, MCP & Deployment
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against Vercel official docs (last updated 2026-06-11) and Anthropic docs, July 2026
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against Vercel official docs (last updated 2026-06-11), live repos, and Anthropic docs, 2026-07-04
 >
 > **Previous:** [Editors & CI/CD](13-editors-cicd.md) · **Next:** [Reference](15-reference.md)
 
@@ -12,7 +12,7 @@ Three complementary integrations, in order of usefulness:
 npx skills add vercel-labs/agent-skills
 ```
 
-The repo (actively maintained, ~28k stars) currently ships 10 skills, including:
+The repo (actively maintained, ~28k stars) currently ships 9 skills, including:
 
 | Skill | What It Provides |
 |-------|-----------------|
@@ -37,13 +37,13 @@ claude mcp add --transport http vercel https://mcp.vercel.com
 
 Capabilities (per Vercel docs, June 2026): search Vercel documentation, **manage teams/projects/deployments**, and analyze deployment logs. Public docs-search tools work without auth; management tools require the OAuth login. It grants the agent the same access as your Vercel user account, so keep human confirmation on for deploy/change operations.
 
-Alternatively there's an official Claude Code plugin that bundles the connection:
+Separately, there's an official Vercel plugin in the Claude Code marketplace — note it is **CLI-based, not MCP-based**: it requires the Vercel CLI (`npm i -g vercel` + `vercel login`) and ships the `/deploy`, `/vercel-logs`, and `/vercel-setup` commands:
 
 ```
 /plugin install vercel@claude-plugins-official
 ```
 
-Choose plugin **or** manual MCP — not both.
+The plugin (Vercel CLI) and the MCP server are different mechanisms and can coexist; for most setups pick one to avoid overlapping capabilities. Vercel also promotes a newer, larger plugin installed via its own skills CLI — `npx plugins add vercel/vercel-plugin` (28 skills, 3 agents, commands like `/vercel-plugin:deploy`) — see [vercel.com/docs/agent-resources/vercel-plugin](https://vercel.com/docs/agent-resources/vercel-plugin).
 
 ## 14.3: Custom Deploy Skill
 

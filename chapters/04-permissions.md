@@ -1,6 +1,6 @@
 # Chapter 4: Permissions, Permission Modes & Sandboxing
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Rules](03-rules.md) · **Next:** [Plugins](05-plugins.md)
 
@@ -64,7 +64,7 @@ Note: purely read-only commands (`ls`, `cat`, `grep`, `git status`, `git diff`, 
 Subtleties worth knowing (all official):
 
 - The space before `*` enforces a word boundary: `Bash(ls *)` matches `ls -la` but not `lsof`; `Bash(ls*)` matches both.
-- Claude Code splits compound commands on `&&`, `||`, `;`, `|`, `&`, newlines — a rule must match **each** subcommand independently, so `Bash(safe-cmd *)` doesn't approve `safe-cmd && rm -rf .`.
+- Claude Code splits compound commands on `&&`, `||`, `;`, `|`, `|&`, `&`, newlines — a rule must match **each** subcommand independently, so `Bash(safe-cmd *)` doesn't approve `safe-cmd && rm -rf .`.
 - Process wrappers `timeout`, `time`, `nice`, `nohup`, `stdbuf` (and bare `xargs`) are stripped before matching. Environment runners (`npx`, `docker exec`, `devbox run`, …) are **not** — `Bash(devbox run *)` would match `devbox run rm -rf .`, so write rules that include the inner command.
 - Argument-constraining patterns like `Bash(curl http://github.com/ *)` are fragile (options, redirects, variables bypass them). Prefer: deny `curl`/`wget` and allow `WebFetch(domain:...)`, or use a PreToolUse hook.
 - `Read`/`Edit` rules apply to Claude's file tools and recognized file commands (`cat`, `sed`, …), **not** to arbitrary subprocesses (a Python script opening a file). For OS-level enforcement use the [sandbox](#sandboxing).
@@ -90,12 +90,12 @@ Cycle modes with **Shift+Tab**, start with `claude --permission-mode <mode>`, or
 
 | Mode | Behavior |
 |------|----------|
-| `default` | Prompts on first use of each tool |
+| `default` | Prompts on first use of each tool. Labeled **Manual** in the CLI and IDE extensions; `manual` is accepted as an alias (v2.1.200+) |
 | `acceptEdits` | Auto-accepts file edits and common filesystem commands in the working directory |
 | `plan` | **Plan mode**: Claude reads files and runs read-only commands but doesn't edit anything |
-| `auto` | Auto-approves with a background safety classifier; prompts only on risky actions (research preview) |
+| `auto` | Auto-approves with a background safety classifier; risky actions are **blocked** (Claude gets the reason and tries an alternative), not prompted (research preview) |
 | `dontAsk` | Auto-denies anything not pre-approved via allow rules |
-| `bypassPermissions` | Skips prompts (except explicit `ask` rules and the `rm -rf /` / `rm -rf ~` circuit breaker). Only for isolated containers/VMs |
+| `bypassPermissions` | Skips prompts (except explicit `ask` rules, the `rm -rf /` / `rm -rf ~` circuit breaker, and — since v2.1.199 — MCP tools marked `requiresUserInteraction`). Only for isolated containers/VMs |
 
 ### Plan mode — use it deliberately
 
@@ -107,7 +107,7 @@ Plan mode is one of the highest-leverage workflow habits: for any non-trivial ch
 
 ### Auto mode
 
-`auto` mode uses a classifier to review each tool call and prompts only on risk (scope escalation, unknown infrastructure, suspicious content-driven actions). Org admins can disable it with `permissions.disableAutoMode`. Inspect the classifier's rules with `claude auto-mode defaults`.
+`auto` mode uses a classifier to review each tool call. On risk (scope escalation, unknown infrastructure, suspicious content-driven actions) it **blocks** the action — Claude receives the reason and tries an alternative. Explicit `ask` rules still prompt, and if the classifier blocks 3 actions in a row or 20 total, auto mode pauses and normal prompting resumes. Org admins can disable the mode with `permissions.disableAutoMode`. Inspect the classifier's rules with `claude auto-mode defaults`.
 
 ## Sandboxing
 

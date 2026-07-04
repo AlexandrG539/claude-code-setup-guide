@@ -1,6 +1,6 @@
 # Chapter 9: Subagents — Isolated Workers
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Skills & Commands](08-skills.md) · **Next:** [Agent Teams & Networks](10-agent-teams-networks.md)
 
@@ -28,7 +28,7 @@ tools: Read, Grep, Glob, Bash     # allowlist; inherits all tools if omitted
 # skills:                # preload FULL skill content into the subagent at startup
 #   - api-conventions
 # memory: project        # persistent cross-session memory: user | project | local
-# permissionMode: default  # default | acceptEdits | auto | dontAsk | bypassPermissions | plan
+# permissionMode: default  # default (alias: manual, v2.1.200+) | acceptEdits | auto | dontAsk | bypassPermissions | plan
 # background: true       # always run in background (default: Claude decides; background since 2.1.198)
 # isolation: worktree    # run in a temporary git worktree, auto-cleaned if unchanged
 # maxTurns: 30           # cap the number of turns
@@ -109,7 +109,7 @@ isolation: worktree
 ---
 ```
 
-The agent gets an isolated copy of the repository in a temporary git worktree (branched from your default branch). No changes → worktree cleaned up; changes → the worktree path and branch are returned. Use for parallel file-mutating agents that would otherwise conflict.
+The agent gets an isolated copy of the repository in a temporary git worktree (branched from your default branch). No changes → worktree cleaned up automatically; worktrees kept because they contain changes are swept later per `cleanupPeriodDays`. Use for parallel file-mutating agents that would otherwise conflict.
 
 ## Recommended Subagents
 

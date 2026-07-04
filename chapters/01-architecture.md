@@ -1,6 +1,6 @@
 # Chapter 1: Architecture Overview & File Layout
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Next:** [Chapter 2: CLAUDE.md & Memory](02-claude-md-memory.md)
 

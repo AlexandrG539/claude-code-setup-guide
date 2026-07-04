@@ -1,6 +1,6 @@
 # Chapter 15: Reference — Shortcuts, Commands, CLI Flags, Models, Troubleshooting
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Vercel Integration](14-vercel.md) · **Back to:** [README](../README.md)
 
@@ -78,7 +78,7 @@ Removed/renamed since early 2026: the `/checkpoints` command is gone (use `/rewi
 | `claude --continue` / `--resume [id\|name]` | Resume conversations (`--fork-session` to resume under a new session ID) |
 | `claude --from-pr 123` | Resume sessions linked to a pull request |
 | `claude -w <name>` / `--worktree` | Start in an isolated git worktree under `.claude/worktrees/` (add `--tmux` for panes) |
-| `claude --permission-mode <mode>` | `default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions` |
+| `claude --permission-mode <mode>` | `default` (alias `manual`, v2.1.200+), `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions` |
 | `claude -p "<prompt>"` | Non-interactive mode for CI/scripts |
 | `--output-format text\|json\|stream-json` | Output format in `-p` mode |
 | `--max-turns N` / `--max-budget-usd X` | Bound unattended runs |
@@ -95,7 +95,9 @@ Removed/renamed since early 2026: the `/checkpoints` command is gone (use `/rewi
 
 ## Model Configuration
 
-Current aliases (Anthropic API, July 2026): `sonnet` → **Sonnet 5** (default model, native 1M-token context), `opus` → **Opus 4.8**, `haiku` → Haiku 4.5, `fable` → **Fable 5** (most capable; not the default — select with `/model fable`), plus `opus[1m]`, `sonnet[1m]`, and **`opusplan`** (Opus during plan mode, Sonnet for execution).
+Current aliases (Anthropic API, July 2026): `sonnet` → **Sonnet 5** (native 1M-token context), `opus` → **Opus 4.8**, `haiku` → Haiku 4.5, `fable` → **Fable 5** (most capable; not the default — select with `/model fable`), `best` (Fable 5 where your org has access, otherwise latest Opus), plus `opus[1m]`, `sonnet[1m]` (no effect when `sonnet` already resolves to Sonnet 5), and **`opusplan`** (Opus during plan mode, Sonnet for execution).
+
+**The default model depends on your account type:** Sonnet 5 for Pro, Team Standard, and Enterprise subscription seats; **Opus 4.8** for Max, Team Premium, Enterprise pay-as-you-go, and Anthropic API accounts; Sonnet 4.5 on Bedrock / Google Cloud's Agent Platform / Foundry.
 
 - `/model` switches and saves as your default; press `s` in the picker for session-only.
 - `/effort` adjusts reasoning depth (`ultracode` also enables automatic workflow orchestration — see [Chapter 10](10-agent-teams-networks.md)).

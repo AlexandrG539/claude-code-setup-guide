@@ -1,6 +1,6 @@
 # Chapter 8: Skills & Slash Commands
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Hooks](07-hooks.md) · **Next:** [Subagents](09-subagents.md)
 
@@ -86,23 +86,23 @@ A line like `` !`git diff HEAD` `` in the skill body is executed **before** Clau
 
 `/code-review /fix-issue 123` loads both skills and passes `123` as `$ARGUMENTS` to each. Up to six skills can be chained at the start of one message.
 
-## Bundled Skills (built into Claude Code)
+## Bundled Skills & Commands (built into Claude Code)
 
-| Command | What It Does |
-|---------|-------------|
-| `/code-review [low\|medium\|high\|xhigh\|max\|ultra] [--fix] [--comment]` | Review the current diff for correctness bugs and cleanups; `--fix` applies findings; `ultra` runs a multi-agent cloud review |
-| `/simplify` | Cleanup-only review (reuse, simplification, efficiency) that applies fixes — since 2.1.154 it does **not** hunt for bugs |
-| `/review [PR]` | Review a GitHub pull request (same engine as `/code-review`) |
-| `/security-review` | Deeper read-only security pass on pending changes |
-| `/verify` | Exercise a change end-to-end to confirm it works |
-| `/debug` | Enable debug logging and troubleshoot session issues |
-| `/loop [interval] [prompt]` | Run a prompt repeatedly (self-paced if no interval) |
-| `/deep-research <question>` | Bundled multi-agent research workflow (see [Chapter 10](10-agent-teams-networks.md)) |
-| `/batch` | Large-scale parallel changes across worktrees |
-| `/fewer-permission-prompts` | Analyze transcripts and propose a permission allowlist |
-| `/init` | Generate or refine CLAUDE.md |
+| Command | Kind | What It Does |
+|---------|------|-------------|
+| `/code-review [target] [low\|medium\|high\|xhigh\|max\|ultra] [--fix] [--comment]` | Skill | Review the current diff (or a target) for correctness bugs and cleanups; `--fix` applies findings; `ultra` runs a multi-agent cloud review |
+| `/simplify` | Skill | Cleanup-only review (reuse, simplification, efficiency) that applies fixes — since 2.1.154 it does **not** hunt for bugs |
+| `/review [PR]` | Built-in command | Review a GitHub pull request (same engine as `/code-review`) |
+| `/security-review` | Built-in command | Deeper read-only security pass on pending changes |
+| `/verify` | Skill | Exercise a change end-to-end to confirm it works |
+| `/debug` | Skill | Enable debug logging and troubleshoot session issues |
+| `/loop [interval] [prompt]` | Skill | Run a prompt repeatedly (self-paced if no interval) |
+| `/deep-research <question>` | Bundled workflow | Multi-agent research workflow (see [Chapter 10](10-agent-teams-networks.md)) |
+| `/batch` | Skill | Large-scale parallel changes across worktrees |
+| `/fewer-permission-prompts` | Skill | Analyze transcripts and propose a permission allowlist |
+| `/init` | Built-in command | Generate or refine CLAUDE.md |
 
-(Availability of some bundled skills depends on plan/platform. Type `/` to see what you have.)
+(Not exhaustive — other bundled skills include `/run`, `/dataviz`, and `/claude-api`, and availability depends on plan/platform. Type `/` to see what you have; the [commands reference](https://code.claude.com/docs/en/commands) is the authoritative list.)
 
 ## Installing Community Skills
 
@@ -118,11 +118,11 @@ npx skills add "<owner/repo>" --skill "<skill-name>" --yes
 
 Notes that keep tripping people up:
 
-- Use the `--skill` flag — do NOT use an `@skill-name` suffix (it's parsed as a git tag).
-- The skills.sh CLI installs to `.agents/skills/` (the cross-tool standard location) and symlinks/mirrors into tool-specific dirs depending on version — verify where files landed and run `/reload-skills` (v2.1.152+) or restart.
+- Use the `--skill` flag to pick a single skill when installing with `skills add`.
+- For Claude Code, the skills.sh CLI installs to `.claude/skills/` (project) or `~/.claude/skills/` (with `-g`), symlinked to a canonical copy; `.agents/skills/` is the install path for other agents (Cursor, Codex, Amp, "universal") — verify where files landed.
 - Claude Code auto-discovers skills in `.claude/skills/`; check the repo's README for its intended install path.
 
-Community skill sources worth knowing: [anthropics/skills](https://github.com/anthropics/skills) (official skill repo, includes `frontend-design` and `web-interface-guidelines`), [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (React/Next.js best practices), [skills.sh](https://skills.sh/) directory.
+Community skill sources worth knowing: [anthropics/skills](https://github.com/anthropics/skills) (official skill repo — `frontend-design`, `skill-creator`, `mcp-builder`, document skills like `pdf`/`docx`/`xlsx`), [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (React/Next.js best practices, `web-design-guidelines`), [skills.sh](https://skills.sh/) directory.
 
 ## Essential Custom Skill Example: Verification Loop
 
@@ -254,7 +254,7 @@ Create a new feature branch for: $ARGUMENTS
 - **On-demand:** full SKILL.md loads only when invoked or matched.
 - **Supporting files:** loaded only when needed.
 - Set `disable-model-invocation: true` on manual-only skills — removes even the description from context.
-- Skills added on disk mid-session: run `/reload-skills`.
+- Changes to skills on disk (in `~/.claude/skills/`, project `.claude/skills/`, and `--add-dir` directories) are picked up **automatically within the session** (live change detection). `/reload-skills` (v2.1.152+) still exists; a restart is only needed when you create a top-level skills directory that didn't exist at session start.
 
 ---
 

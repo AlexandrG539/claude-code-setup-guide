@@ -1,6 +1,6 @@
 # Chapter 13: Editor Integration & CI/CD
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Monorepos & Parallel Workflows](12-monorepo-parallel.md) · **Next:** [Vercel Integration](14-vercel.md)
 
@@ -12,7 +12,7 @@ Claude Code runs as: a terminal CLI, a **desktop app** (macOS/Windows), a **web 
 
 - Install the official **Claude Code VS Code extension**, or run the CLI in the integrated terminal and connect with the `/ide` command.
 - When connected, Claude sees your current selection and open files (the built-in IDE MCP server), and diffs can open in the editor.
-- Multi-root workspaces work for multi-repo setups.
+- Multi-root workspaces are a known limitation: the extension uses the **first** workspace folder for cwd, configuration, and @-file autocomplete (open issues track full support). For multi-repo work, prefer one window per repo or `--add-dir`.
 
 ### JetBrains IDEs
 
@@ -114,10 +114,10 @@ claude -p "..." --max-turns 10 --max-budget-usd 2.50 --allowedTools "Read,Grep,B
 | Format | Flag | Use Case |
 |--------|------|----------|
 | Text | `--output-format text` | Simple pipe output (default) |
-| JSON | `--output-format json` | Structured result (includes `modelUsage`, cost) |
+| JSON | `--output-format json` | Structured result (`result`, `session_id`, `total_cost_usd`, per-model cost breakdown) |
 | Stream JSON | `--output-format stream-json` | Real-time event stream |
 
-In `-p` mode there is no user to prompt, so tool calls follow your configured permission rules; combine with `--permission-mode`, allowlists, or a sandbox for unattended runs.
+In `-p` mode there is no user to prompt, so tool calls follow your configured permission rules; combine with `--permission-mode`, allowlists, or a sandbox for unattended runs. For CI and scripted calls, official docs now recommend adding `--bare` (it will become the default for `-p` in a future release).
 
 For deeper programmatic integration (custom agents, multi-agent systems), use the **Claude Agent SDK** — the same engine that powers the GitHub Action. See [Chapter 10](10-agent-teams-networks.md#the-claude-agent-sdk).
 

@@ -1,6 +1,6 @@
 # Chapter 6: MCP Servers — External Service Connections
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs and live npm/PyPI registries, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs and live npm/PyPI registries, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Plugins](05-plugins.md) · **Next:** [Hooks](07-hooks.md)
 
@@ -18,7 +18,7 @@ Configuration (env var `ENABLE_TOOL_SEARCH` or settings `env`):
 
 | Value | Behavior |
 |-------|----------|
-| (unset) | All MCP tools deferred, loaded on demand (default). Falls back to upfront loading on Vertex AI / non-first-party `ANTHROPIC_BASE_URL` |
+| (unset) | All MCP tools deferred, loaded on demand (default). Falls back to upfront loading on Google Cloud's Agent Platform (formerly Vertex AI) / non-first-party `ANTHROPIC_BASE_URL` |
 | `auto` / `auto:N` | Load upfront if tools fit within 10% (or N%) of the context window; defer overflow |
 | `false` | Load everything upfront (old behavior) |
 

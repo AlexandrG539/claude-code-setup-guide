@@ -1,6 +1,6 @@
 # Chapter 2: CLAUDE.md & Memory
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Architecture](01-architecture.md) · **Next:** [Rules](03-rules.md)
 
@@ -8,7 +8,7 @@ CLAUDE.md is loaded into every request. It defines what Claude always knows abou
 
 ## Guidelines for CLAUDE.md
 
-- **Target ~100 lines, hard cap 200.** Official docs say "target under 200 lines per CLAUDE.md file"; the Claude Code team's own CLAUDE.md sits around 100 lines / 2,500 tokens. Longer files consume more context and reduce adherence.
+- **Target under 200 lines.** Official docs say "target under 200 lines per CLAUDE.md file" — longer files consume more context and reduce adherence. Shorter is better: for each line, keep only what earns its place.
 - For each line, ask: *"Would removing this cause Claude to make mistakes?"* If not, cut it.
 - Move procedures and reference material to [skills](08-skills.md) (on-demand loading) or [path-scoped rules](03-rules.md).
 - Use imperative language: "Use X" and "Never do Y" — not "It would be nice if..."
@@ -164,7 +164,7 @@ If a `CLAUDE.md` already exists, `/init` suggests improvements rather than overw
 
 Alongside the CLAUDE.md you write, Claude writes notes for itself across sessions (requires v2.1.59+, **on by default**).
 
-- **Location:** machine-local at `~/.claude/projects/<project>/memory/`, where `<project>` is derived from the git repo — all worktrees and subdirectories of one repo share one memory directory.
+- **Location:** machine-local at `~/.claude/projects/<project>/memory/`, where `<project>` is derived from the git repo — all worktrees and subdirectories of one repo share one memory directory. Outside a git repo, the project root is used instead.
 - **What's loaded at session start:** the first 200 lines / 25KB of `MEMORY.md` (an index Claude maintains). Topic files (`debugging.md`, `api-conventions.md`, …) load on demand.
 - **What Claude saves:** build commands it figured out, debugging insights, code-style preferences observed from your corrections, workflow habits. It decides what's worth keeping.
 - **Audit:** run `/memory` to browse all loaded memory files, open them in your editor, or toggle the feature. Everything is plain markdown you can edit or delete.

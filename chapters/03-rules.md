@@ -1,6 +1,6 @@
 # Chapter 3: Rules — Modular Guidelines
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [CLAUDE.md & Memory](02-claude-md-memory.md) · **Next:** [Permissions](04-permissions.md)
 

@@ -1,6 +1,6 @@
 # Chapter 5: Plugins — Packaged Extensions
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs and the live `anthropics/claude-plugins-official` repo, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs and the live `anthropics/claude-plugins-official` repo, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Permissions](04-permissions.md) · **Next:** [MCP Servers](06-mcp.md)
 
@@ -37,7 +37,7 @@ Browse at [claude.com/plugins](https://claude.com/plugins) or `/plugin` → Disc
 
 ### Code intelligence (LSP) — must-have
 
-LSP plugins give Claude **automatic diagnostics after every edit** (it sees and fixes type errors in the same turn) and precise code navigation (go-to-definition, find-references). The official marketplace covers 12+ languages; plugin names follow the `<lang>-lsp` pattern and require the language-server binary on your `$PATH`:
+LSP plugins give Claude **automatic diagnostics after every edit** (it sees and fixes type errors in the same turn) and precise code navigation (go-to-definition, find-references). The official marketplace covers 12 languages; plugin names follow the `<lang>-lsp` pattern and require the language-server binary on your `$PATH`:
 
 | Language | Plugin | Binary required |
 |----------|--------|-----------------|
@@ -89,7 +89,7 @@ The official marketplace also carries integration plugins that bundle pre-config
 ## Community Marketplaces
 
 - **`anthropics/claude-plugins-community`** — third-party plugins that passed Anthropic's automated validation and safety screening, each pinned to a commit SHA. Add manually: `/plugin marketplace add anthropics/claude-plugins-community`, then `install <name>@claude-community`.
-- **`obra/superpowers-marketplace`** — the popular Superpowers workflow suite (20+ skills: brainstorm, write-plan, execute-plan, TDD enforcement). Active as of 2026: `/plugin marketplace add obra/superpowers-marketplace` then `/plugin install superpowers@superpowers-marketplace`.
+- **`obra/superpowers-marketplace`** — the popular Superpowers workflow suite (20+ skills, including brainstorm, write-plan, execute-plan). Active as of 2026: `/plugin marketplace add obra/superpowers-marketplace` then `/plugin install superpowers@superpowers-marketplace`.
 - **`affaan-m/ECC`** (formerly `everything-claude-code` — the repo was renamed; ~225k stars, actively developed as of July 2026) — a large "agent harness optimization" config: skills, instincts, memory, security. Powerful but heavyweight; cherry-pick rather than installing everything.
 
 **Security note (official):** plugins execute arbitrary code with your user privileges. Only install from sources you trust; check the "Will install" inventory first. Orgs can restrict sources via `strictKnownMarketplaces` / `blockedMarketplaces`.

@@ -1,7 +1,7 @@
 # Claude Code: Complete Configuration Guide (July 2026)
 
 > A comprehensive, tech-stack-agnostic guide for configuring Claude Code from scratch.
-> Verified against official Anthropic documentation, the official changelog, and live package registries on **2026-07-03** (Claude Code **2.1.200**, default model **Claude Sonnet 5**).
+> Verified against official Anthropic documentation, the official changelog, and live package registries on **2026-07-04** (Claude Code **2.1.201**; default model is **Claude Sonnet 5** on Pro/Team Standard/Enterprise seats, **Opus 4.8** on Max/Team Premium/API accounts).
 
 The guide is split into chapters. Read them in order for a from-scratch setup, or jump to what you need.
 
@@ -70,7 +70,7 @@ This revision was produced by re-verifying every claim against official sources 
 
 | Area | Change | See |
 |------|--------|-----|
-| **Default model** | Claude Sonnet 5 is the default (2.1.197), with a native 1M-token context window. Fable 5 available via `/model fable`; Opus 4.8 current Opus | [Ch. 15](chapters/15-reference.md#model-configuration) |
+| **Default model** | Claude Sonnet 5 became the default in 2.1.197 (native 1M-token context window); the default is account-dependent — Opus 4.8 on Max/Team Premium/API. Fable 5 available via `/model fable`; new `best` alias | [Ch. 15](chapters/15-reference.md#model-configuration) |
 | **MCP tool search** | MCP tool definitions are deferred by default — old "keep 5–10 servers max / 80 tools" budget advice is obsolete | [Ch. 6](chapters/06-mcp.md) |
 | **Subagents** | Run in **background by default** (2.1.198); nested subagents up to 5 levels (2.1.172); `/agents` wizard removed; field is `permissionMode` (camelCase); many new frontmatter fields | [Ch. 9](chapters/09-subagents.md) |
 | **Agent teams** | Simplified implicit-team model (2.1.178) — no TeamCreate/TeamDelete; still experimental behind `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | [Ch. 10](chapters/10-agent-teams-networks.md) |
@@ -102,4 +102,4 @@ Every chapter ends with links to the official documentation pages it was verifie
 - [Official plugin catalog](https://claude.com/plugins) · [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) · [anthropics/skills](https://github.com/anthropics/skills)
 - [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk/overview) · [claude-code-action](https://github.com/anthropics/claude-code-action)
 
-Third-party claims (packages, marketplaces, community repos) were checked against live npm/PyPI/GitHub state on 2026-07-03; each carries its source link in place. When this guide and the official docs disagree, trust the docs — and please file an issue here.
+Third-party claims (packages, marketplaces, community repos) were checked against live npm/PyPI/GitHub state on 2026-07-04; each carries its source link in place. When this guide and the official docs disagree, trust the docs — and please file an issue here.

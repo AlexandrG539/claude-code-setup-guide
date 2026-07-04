@@ -1,6 +1,6 @@
 # Chapter 10: Agent Teams, Workflows & Multi-Agent Networks
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, changelog, and Linux Foundation sources, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, changelog, and Linux Foundation sources, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Subagents](09-subagents.md) · **Next:** [Context Management](11-context-management.md)
 
@@ -113,7 +113,7 @@ MCP connects an agent to **tools** — and since any agent can be wrapped *as* a
 
 ### A2A (Agent2Agent protocol)
 
-For **cross-vendor** agent-to-agent communication, the Linux Foundation's **A2A protocol** (donated by Google in 2025) is the emerging standard: v1.0 stable landed April 2026 with signed Agent Cards, 150+ member organizations, SDKs in Python/JS/Java/Go/.NET, and GA support in Microsoft Copilot Studio, Azure AI Foundry, and Amazon Bedrock AgentCore. The accepted framing: **MCP connects agents to tools; A2A connects agents to agents** — production stacks run both.
+For **cross-vendor** agent-to-agent communication, the Linux Foundation's **A2A protocol** (donated by Google in 2025) is the emerging standard: v1.0 stable landed March 2026 (v1.0.0 released 2026-03-12) with signed Agent Cards, 150+ member organizations, SDKs in Python/JS/Java/Go/.NET, and support in Microsoft Copilot Studio, Azure AI Foundry, and Amazon Bedrock AgentCore. The accepted framing: **MCP connects agents to tools; A2A connects agents to agents** — production stacks run both.
 
 Anthropic has not (as of July 2026) shipped native A2A support in Claude Code; its native answer is agent teams + the Agent SDK. If you need Claude agents in an A2A mesh, wrap an Agent SDK service with an A2A server library.
 

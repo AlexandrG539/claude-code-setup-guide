@@ -1,10 +1,10 @@
 # Chapter 11: Context Management Strategy
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Agent Teams & Networks](10-agent-teams-networks.md) · **Next:** [Monorepos & Parallel Workflows](12-monorepo-parallel.md)
 
-Context window is your most precious resource. Manage it actively. (Note: Sonnet 5 — the current default model — has a native 1M-token context window, which relaxes but does not eliminate this discipline: a lean context is still faster, cheaper, and improves adherence.)
+Context window is your most precious resource. Manage it actively. (Note: Sonnet 5 — the default model on most subscription plans — has a native 1M-token context window, which relaxes but does not eliminate this discipline: a lean context is still faster, cheaper, and improves adherence.)
 
 ## Budget Awareness
 
@@ -20,7 +20,7 @@ Context window is your most precious resource. Manage it actively. (Note: Sonnet
 | Skill full content (invoked) | One-time when used |
 | Subagent | ~Zero in your window (isolated; returns a summary) |
 | Dynamic workflow | ~Zero in your window (returns one report) |
-| Hook (`command`/`http` type) | Zero (external) |
+| Hook (`command`/`http` type) | Zero **unless the hook returns output** — `additionalContext` JSON (and, for a few events, stdout) enters Claude's context each firing |
 | Hook (`prompt`/`agent` type) | Tokens when triggered |
 
 ## Context Optimization Rules
@@ -34,7 +34,7 @@ Context window is your most precious resource. Manage it actively. (Note: Sonnet
 7. **Branch instead of polluting:** `/branch` forks the conversation at this point for a different direction, preserving the original.
 8. **Prefer skills over a bloated CLAUDE.md** and path-scoped rules over global ones.
 9. **Set `disable-model-invocation: true`** on manual-only skills — removes their descriptions from every request.
-10. **Audit plugins:** `/plugin` → Installed shows a "Not used recently" group (2.1.187+) — uninstall what you don't use.
+10. **Audit plugins:** `/plugin` → Installed surfaces plugins you haven't used recently (2.1.187+) — uninstall what you don't use.
 11. **Name sessions:** `/rename` so you can `/resume` later without rebuilding context.
 
 ## Compaction Prompt Template

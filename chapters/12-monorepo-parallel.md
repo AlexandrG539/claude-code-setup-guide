@@ -1,6 +1,6 @@
 # Chapter 12: Monorepos & Parallel Workflows
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [Context Management](11-context-management.md) · **Next:** [Editors & CI/CD](13-editors-cicd.md)
 
@@ -77,8 +77,9 @@ claude --worktree feature-auth     # short: claude -w feature-auth
 # Auto-generated name
 claude -w
 
-# Branch the worktree from a PR
-claude -w --from-pr 123            # or: claude -w "#123"
+# Branch the worktree from a PR (worktree created at .claude/worktrees/pr-123)
+claude -w "#123"                   # also accepts a full PR URL
+# Note: --from-pr is a *resume* flag (reopens sessions linked to a PR), not a worktree flag
 
 # One tmux/iTerm2 pane per worktree session
 claude -w feature-auth --tmux

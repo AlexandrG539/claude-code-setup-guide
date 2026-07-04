@@ -1,6 +1,6 @@
 # Chapter 7: Hooks — Deterministic Automation
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, July 2026 (Claude Code 2.1.200)
+> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
 >
 > **Previous:** [MCP Servers](06-mcp.md) · **Next:** [Skills & Commands](08-skills.md)
 
@@ -73,7 +73,8 @@ Hooks go in `settings.json` (project or global), or use the interactive `/hooks`
 
 - `matcher`: tool name pattern (`"Edit|Write"`, `"Bash"`, `"*"` for all, `""` for no-tool events). Matchers use **canonical tool names**.
 - Hook input arrives as **JSON on stdin** with fields like `tool_name`, `tool_input.file_path`, `tool_input.command`.
-- Exit code 0 = success (output suppressed). Exit code 2 = block + feed stderr back to Claude as feedback.
+- Exit code 0 = success. Stdout is parsed for JSON output fields (`continue`, `decision: block`, `permissionDecision: allow|deny|ask|defer`, `updatedInput`, `additionalContext`, …); for most events plain stdout goes only to the debug log, but for `UserPromptSubmit`, `UserPromptExpansion`, and `SessionStart` it is **added to Claude's context**.
+- Exit code 2 = block + feed stderr back to Claude as feedback (on blockable events; e.g. `SessionStart`, `Notification`, `PostToolUse` can't be blocked). Exit code 1 does **not** block — Claude Code treats it as a non-blocking error and proceeds.
 - `${CLAUDE_PROJECT_DIR}` is officially documented: use it to reference hook scripts relative to the project root; it's also exported into the hook process environment.
 
 ## Recommended Hook Configuration
