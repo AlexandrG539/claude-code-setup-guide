@@ -53,6 +53,12 @@ The guide is split into chapters. Each chapter's YAML frontmatter states what it
 
 This guide is written to be executed by a Claude agent configuring a project. Machine-readable index: [`llms.txt`](llms.txt). Each chapter's YAML frontmatter carries `description`, `read_when`, `verified`, and `claude_code_version`. Outside a clone, fetch raw files from `https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/<path>` (e.g. `chapters/04-permissions.md`).
 
+**One-command setup:** install the [`self-configure` skill](templates/self-configure/SKILL.md) to `~/.claude/skills/self-configure/SKILL.md` once, and `/self-configure` runs this procedure in any project:
+
+```bash
+mkdir -p ~/.claude/skills/self-configure && curl -s https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/templates/self-configure/SKILL.md -o ~/.claude/skills/self-configure/SKILL.md
+```
+
 **Procedure** (standing instructions for the whole configuration task):
 
 1. Inspect the project first: languages, package manager, frameworks, repo shape (single package or monorepo), existing `.claude/` and `CLAUDE.md`, CI provider, deploy target. Route by facts found, not by assumptions.
