@@ -1,8 +1,16 @@
+---
+description: "Installing plugins: the official marketplace, per-language LSP plugins, service-integration plugins, community marketplaces, and context budget. Read before writing custom skills or agents — plugins often bundle them."
+read_when:
+  - "the project's language has an LSP plugin (TypeScript, Python, Rust, Go, Java, ...)"
+  - "the team uses services with official plugins (GitHub, Slack, Sentry, ...)"
+topics: [plugins, lsp, marketplace, service-integrations]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 5: Plugins — Packaged Extensions
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs and the live `anthropics/claude-plugins-official` repo, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Permissions](04-permissions.md) · **Next:** [MCP Servers](06-mcp.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Permissions](04-permissions.md) · **Next:** [MCP Servers](06-mcp.md)
 
 Plugins bundle skills, hooks, agents, MCP servers, and LSP servers into installable packages. **Install plugins before creating custom skills, agents, or hooks** — plugins often provide these out of the box.
 

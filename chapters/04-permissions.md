@@ -1,8 +1,15 @@
+---
+description: "Permission rules (allow/ask/deny syntax, evaluation order, compound-command semantics), the six permission modes including plan mode and auto mode, and OS-level sandboxing. Read before installing plugins or running commands in a new project."
+read_when:
+  - "always — core chapter, set permissions before installing anything"
+topics: [permissions, permission-modes, plan-mode, auto-mode, sandbox, settings-json]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 4: Permissions, Permission Modes & Sandboxing
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Rules](03-rules.md) · **Next:** [Plugins](05-plugins.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Rules](03-rules.md) · **Next:** [Plugins](05-plugins.md)
 
 Permissions control what tools Claude can use without asking. Set these **early** — before installing plugins or running commands. Unlike CLAUDE.md, permission rules are **enforced by Claude Code itself**, regardless of what the model decides.
 

@@ -1,8 +1,16 @@
+---
+description: "Lookup tables: keyboard shortcuts, built-in commands, CLI flags, model aliases and account-dependent defaults, and troubleshooting by symptom. Read when looking up a specific command, flag, shortcut, or model, or when diagnosing a problem."
+read_when:
+  - "looking up a command, CLI flag, keyboard shortcut, or model alias"
+  - "troubleshooting: context pressure, ignored CLAUDE.md, hooks not firing, MCP or plugin failures, slow performance"
+topics: [reference, commands, cli-flags, keyboard-shortcuts, models, troubleshooting]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 15: Reference — Shortcuts, Commands, CLI Flags, Models, Troubleshooting
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Vercel Integration](14-vercel.md) · **Back to:** [README](../README.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Vercel Integration](14-vercel.md) · **Back to:** [README](../README.md)
 
 ## Keyboard Shortcuts
 
@@ -69,7 +77,7 @@
 | `/security-review` / `/review [PR]` / `/code-review` / `/simplify` / `/verify` | Review & verification skills — see [Chapter 8](08-skills.md#bundled-skills-built-into-claude-code) |
 | `/loop` / `/deep-research` / `/batch` | Recurring prompts / bundled research workflow / parallel changes |
 
-Removed/renamed since early 2026: the `/checkpoints` command is gone (use `/rewind`); conversation forking moved from `/fork` to `/branch`; `/simplify` became cleanup-only (bug hunting = `/code-review`).
+Removed/renamed since early 2026: the `/checkpoints` command is gone (use `/rewind`); conversation forking moved from `/fork` to `/branch`; `/simplify` became cleanup-only (bug hunting = `/code-review`); as of 2.1.202 `/review <pr>` is single-pass again — use `/code-review <level> <PR#>` for multi-agent PR review.
 
 ## CLI Flags Worth Knowing
 

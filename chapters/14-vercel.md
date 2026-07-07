@@ -1,8 +1,15 @@
+---
+description: "Vercel integration: Vercel agent skills, the official MCP server, the CLI plugin, and a custom deploy skill template. Read only when the project deploys to Vercel."
+read_when:
+  - "the project deploys to Vercel"
+topics: [vercel, deployment, nextjs, mcp]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 14: Vercel Integration — Skills, MCP & Deployment
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against Vercel official docs (last updated 2026-06-11), live repos, and Anthropic docs, 2026-07-04
->
-> **Previous:** [Editors & CI/CD](13-editors-cicd.md) · **Next:** [Reference](15-reference.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Editors & CI/CD](13-editors-cicd.md) · **Next:** [Reference](15-reference.md)
 
 Three complementary integrations, in order of usefulness:
 

@@ -1,8 +1,16 @@
+---
+description: "Context management: budget-awareness table, optimization rules, /compact, /btw, /branch, and checkpoints/rewind. Read when sessions hit context pressure or when configuring for a large codebase."
+read_when:
+  - "sessions run long or hit context pressure"
+  - "configuring Claude Code for a large codebase"
+topics: [context-management, compact, checkpoints, rewind, optimization]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 11: Context Management Strategy
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Agent Teams & Networks](10-agent-teams-networks.md) · **Next:** [Monorepos & Parallel Workflows](12-monorepo-parallel.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Agent Teams & Networks](10-agent-teams-networks.md) · **Next:** [Monorepos & Parallel Workflows](12-monorepo-parallel.md)
 
 Context window is your most precious resource. Manage it actively. (Note: Sonnet 5 — the default model on most subscription plans — has a native 1M-token context window, which relaxes but does not eliminate this discipline: a lean context is still faster, cheaper, and improves adherence.)
 

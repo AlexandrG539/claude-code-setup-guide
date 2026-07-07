@@ -1,8 +1,16 @@
+---
+description: "Monorepos and parallel work: hierarchical CLAUDE.md, claudeMdExcludes, native worktrees (claude -w), background sessions, branching strategy, and tmux. Read when the project is a monorepo or when running parallel Claude sessions."
+read_when:
+  - "the project is a monorepo (multiple packages/apps in one repo)"
+  - "running several Claude sessions in parallel on one repo"
+topics: [monorepo, worktrees, parallel-sessions, claude-md-hierarchy, tmux]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 12: Monorepos & Parallel Workflows
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Context Management](11-context-management.md) · **Next:** [Editors & CI/CD](13-editors-cicd.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Context Management](11-context-management.md) · **Next:** [Editors & CI/CD](13-editors-cicd.md)
 
 ## Monorepo vs Separate Repos
 

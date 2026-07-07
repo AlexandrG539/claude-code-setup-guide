@@ -1,8 +1,17 @@
+---
+description: "Multi-agent options compared and configured: agent teams, dynamic workflows / ultracode, background agents, the Agent SDK, and MCP/A2A interconnect. Read when a task needs multiple coordinated agents or sessions, or when integrating Claude agents into services."
+read_when:
+  - "task needs more agents than one conversation can coordinate (audits, migrations, multi-angle review)"
+  - "building programmatic agents or CI bots with the Agent SDK"
+  - "connecting agents across tools or vendors (MCP, A2A)"
+topics: [agent-teams, workflows, ultracode, background-agents, agent-sdk, a2a, orchestration]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 10: Agent Teams, Workflows & Multi-Agent Networks
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, changelog, and Linux Foundation sources, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Subagents](09-subagents.md) · **Next:** [Context Management](11-context-management.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Subagents](09-subagents.md) · **Next:** [Context Management](11-context-management.md)
 
 Claude Code now has four native ways to run multi-agent work, plus external interconnect options. Pick by **who holds the plan** and **whether workers must talk to each other**:
 
@@ -79,6 +88,8 @@ A **workflow** is a JavaScript script that orchestrates subagents at scale — C
 
 **Safety/cost:** workflow subagents always run in `acceptEdits` mode and inherit your tool allowlist; shell/web/MCP calls outside the allowlist still prompt. Caps: ~16 concurrent agents, 1,000 per run. Gauge spend on a small slice first. Disable org-wide with `disableWorkflows` if needed.
 
+**Size guideline (v2.1.202+):** the **Dynamic workflow size** setting in `/config` caps the scale Claude aims for when writing workflow scripts: `unrestricted` (default), `small` (<5 agents), `medium` (<15), `large` (<50). It is sent to Claude as advice — an explicit prompt still overrides it, and the runtime caps above always apply. Changes take effect on the next prompt.
+
 ---
 
 ## Background Agents (`claude agents`)
@@ -137,7 +148,7 @@ Anthropic has not (as of July 2026) shipped native A2A support in Claude Code; i
 - [Dynamic workflows (official)](https://code.claude.com/docs/en/workflows)
 - [Agent view / background agents (official)](https://code.claude.com/docs/en/agent-view)
 - [Claude Agent SDK (official)](https://code.claude.com/docs/en/agent-sdk/overview)
-- [Claude Code changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) (2.1.154–2.1.200)
+- [Claude Code changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) (2.1.154–2.1.202)
 - [Linux Foundation: A2A surpasses 150 organizations](https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year) · [A2A one-year report (AIwire, Apr 2026)](https://www.hpcwire.com/aiwire/2026/04/09/linux-foundation-a2a-protocol-marks-one-year-with-broad-enterprise-and-cloud-adoption/)
 
 **Next:** [Chapter 11: Context Management →](11-context-management.md)

@@ -1,0 +1,30 @@
+# Claude Code: Complete Configuration Guide
+
+> Tech-stack-agnostic guide for configuring Claude Code from scratch, written to be executed by a Claude agent performing project self-configuration. Every claim verified against official Anthropic docs, the official changelog, and live package registries on 2026-07-07 (Claude Code 2.1.202). Each chapter carries YAML frontmatter with `description`, `read_when`, `verified`, and `claude_code_version`.
+
+Procedure and boundaries for agents: see "For Agents: Self-Configuration Procedure" in the README. Core chapters (1, 2, 4, 7) apply to every project; read the rest only when their condition matches. All files are UTF-8 markdown, under 500 lines, one level deep from this index.
+
+## Core (read for every project)
+
+- [README — index, agent procedure, boundaries, what's new](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/README.md): start here; routing table and self-configuration procedure
+- [Ch. 1 Architecture & File Layout](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/01-architecture.md): extension layers, directory structure, loading precedence — read first
+- [Ch. 2 CLAUDE.md & Memory](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/02-claude-md-memory.md): content rules, templates, imports, AGENTS.md, auto memory
+- [Ch. 4 Permissions, Modes & Sandboxing](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/04-permissions.md): allow/ask/deny syntax, permission modes, sandbox — set before installing anything
+- [Ch. 7 Hooks](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/07-hooks.md): ~30 lifecycle events, ready-to-use config — must-hold rules belong in hooks
+
+## Conditional (read when the condition matches)
+
+- [Ch. 3 Rules](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/03-rules.md): when standards span several domains or CLAUDE.md outgrows ~60 lines
+- [Ch. 5 Plugins](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/05-plugins.md): when the language has an LSP plugin or team services have official plugins
+- [Ch. 6 MCP Servers](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/06-mcp.md): when external services are needed beyond plugins (databases, browsers, trackers)
+- [Ch. 8 Skills & Slash Commands](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/08-skills.md): when repeated procedures are worth encoding as commands
+- [Ch. 9 Subagents](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/09-subagents.md): when delegatable roles fit (review, planning, build fixing)
+- [Ch. 10 Agent Teams, Workflows & Networks](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/10-agent-teams-networks.md): when multi-agent coordination or Agent SDK integration is needed
+- [Ch. 11 Context Management](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/11-context-management.md): when sessions run long or the codebase is large
+- [Ch. 12 Monorepos & Parallel Workflows](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/12-monorepo-parallel.md): when the repo is a monorepo or parallel sessions are used
+- [Ch. 13 Editors & CI/CD](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/13-editors-cicd.md): when the project has CI or IDE integration is wanted
+- [Ch. 14 Vercel Integration](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/14-vercel.md): only when the project deploys to Vercel
+
+## Reference
+
+- [Ch. 15 Reference](https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/chapters/15-reference.md): shortcuts, commands, CLI flags, model aliases, troubleshooting by symptom

@@ -1,8 +1,15 @@
+---
+description: "Claude Code extension layers, global vs project directory layout, loading order, and settings precedence. Read first — every other chapter builds on this file map."
+read_when:
+  - "always — core chapter, read before configuring anything"
+topics: [architecture, file-layout, extension-layers, settings-precedence, context-costs]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 1: Architecture Overview & File Layout
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Next:** [Chapter 2: CLAUDE.md & Memory](02-claude-md-memory.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Next:** [Chapter 2: CLAUDE.md & Memory](02-claude-md-memory.md)
 
 Claude Code has these extension layers that plug into different parts of the agentic loop:
 

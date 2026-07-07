@@ -1,8 +1,16 @@
+---
+description: "MCP servers: tool search (deferred loading), transports, scopes, and tiered, registry-verified server recommendations. Read when the project needs external services that plugins don't cover."
+read_when:
+  - "project needs external services: databases, browsers, issue trackers, documentation, deployment platforms"
+  - "an MCP server misbehaves or its tools seem missing"
+topics: [mcp, tool-search, transports, scopes, servers]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 6: MCP Servers — External Service Connections
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs and live npm/PyPI registries, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Plugins](05-plugins.md) · **Next:** [Hooks](07-hooks.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Plugins](05-plugins.md) · **Next:** [Hooks](07-hooks.md)
 
 MCP (Model Context Protocol) connects Claude to external services — issue trackers, databases, deployment platforms, monitoring, documentation.
 

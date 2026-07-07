@@ -1,8 +1,17 @@
+---
+description: "Subagents: frontmatter reference, nesting, model selection and cost, persistent memory, worktree isolation, and three ready-to-use agent templates (planner, code-reviewer, build-fixer). Read when a project benefits from delegatable roles or context-heavy exploration."
+read_when:
+  - "delegatable roles fit the project: code review, planning, build fixing"
+  - "heavy exploration or log-reading floods the main context"
+  - "looking up subagent frontmatter fields or troubleshooting unused agents"
+topics: [subagents, agents, delegation, frontmatter, worktree-isolation, templates]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 9: Subagents — Isolated Workers
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Skills & Commands](08-skills.md) · **Next:** [Agent Teams & Networks](10-agent-teams-networks.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Skills & Commands](08-skills.md) · **Next:** [Agent Teams & Networks](10-agent-teams-networks.md)
 
 Subagents run in their own context window with a custom system prompt and their own tool/permission constraints. Use one when a side task would flood your main conversation with search results, logs, or file contents you won't reference again — the subagent does that work in its own context and returns only the summary.
 

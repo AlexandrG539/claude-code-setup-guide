@@ -1,8 +1,17 @@
+---
+description: "Editor and CI integration: VS Code/Cursor/JetBrains extensions, GitHub Actions via claude-code-action@v1, and headless claude -p with output formats. Read when the project has CI or when IDE integration is wanted."
+read_when:
+  - "the project has CI (GitHub Actions or similar)"
+  - "setting up IDE integration (VS Code, Cursor, JetBrains)"
+  - "scripting Claude Code non-interactively (claude -p)"
+topics: [ide, vscode, jetbrains, github-actions, ci-cd, headless]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 13: Editor Integration & CI/CD
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Monorepos & Parallel Workflows](12-monorepo-parallel.md) · **Next:** [Vercel Integration](14-vercel.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Monorepos & Parallel Workflows](12-monorepo-parallel.md) · **Next:** [Vercel Integration](14-vercel.md)
 
 ## Editor & Surface Integration
 

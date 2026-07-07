@@ -1,8 +1,17 @@
+---
+description: "Skills and slash commands: SKILL.md format, frontmatter reference, invocation control, arguments and dynamic context injection, bundled skills, and four ready-to-use skill templates. Read when a project has repeated procedures worth encoding as commands."
+read_when:
+  - "the same instructions or checklist keep being repeated in chat"
+  - "a CLAUDE.md section has grown into a procedure rather than a fact"
+  - "looking up bundled skills or SKILL.md frontmatter fields"
+topics: [skills, slash-commands, skill-md, frontmatter, templates]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 8: Skills & Slash Commands
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Hooks](07-hooks.md) · **Next:** [Subagents](09-subagents.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Hooks](07-hooks.md) · **Next:** [Subagents](09-subagents.md)
 
 Skills extend what Claude can do: a `SKILL.md` file with instructions that loads on demand. Claude uses skills when relevant, or you invoke one directly with `/skill-name`.
 

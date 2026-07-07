@@ -1,51 +1,73 @@
 # Claude Code: Complete Configuration Guide (July 2026)
 
-> A comprehensive, tech-stack-agnostic guide for configuring Claude Code from scratch.
-> Verified against official Anthropic documentation, the official changelog, and live package registries on **2026-07-04** (Claude Code **2.1.201**; default model is **Claude Sonnet 5** on Pro/Team Standard/Enterprise seats, **Opus 4.8** on Max/Team Premium/API accounts).
+> A comprehensive, tech-stack-agnostic guide for configuring Claude Code from scratch — written to be **executed by a Claude agent** as well as read by humans (see [For Agents](#for-agents-self-configuration-procedure)).
+> Verified against official Anthropic documentation, the official changelog, and live package registries on **2026-07-07** (Claude Code **2.1.202**; default model is **Claude Sonnet 5** on Pro/Team Standard/Enterprise seats, **Opus 4.8** on Max/Team Premium/API accounts).
 
-The guide is split into chapters. Read them in order for a from-scratch setup, or jump to what you need.
+The guide is split into chapters. Each chapter's YAML frontmatter states what it covers, when to read it, and the version it was verified against. Machine-readable index: [`llms.txt`](llms.txt).
 
 ## Table of Contents
 
 **Phase 1: Foundation (Universal — Every Project)**
 
-| # | Chapter | What it covers |
-|---|---------|----------------|
-| 1 | [Architecture Overview & File Layout](chapters/01-architecture.md) | Extension layers, context costs, directory structure, loading precedence |
-| 2 | [CLAUDE.md & Memory](chapters/02-claude-md-memory.md) | Project memory, templates, imports, AGENTS.md, auto memory, `/init` |
-| 3 | [Rules](chapters/03-rules.md) | Modular guidelines, path-scoped rules, symlink sharing, recommended rule files |
-| 4 | [Permissions, Modes & Sandboxing](chapters/04-permissions.md) | Rule syntax, deny/ask/allow, **plan mode**, auto mode, sandbox |
+| # | Chapter | What it covers | Read when |
+|---|---------|----------------|-----------|
+| 1 | [Architecture Overview & File Layout](chapters/01-architecture.md) | Extension layers, context costs, directory structure, loading precedence | **Always** — read first |
+| 2 | [CLAUDE.md & Memory](chapters/02-claude-md-memory.md) | Project memory, templates, imports, AGENTS.md, auto memory, `/init` | **Always** |
+| 3 | [Rules](chapters/03-rules.md) | Modular guidelines, path-scoped rules, symlink sharing, recommended rule files | Standards span several domains, or CLAUDE.md outgrows ~60 lines |
+| 4 | [Permissions, Modes & Sandboxing](chapters/04-permissions.md) | Rule syntax, deny/ask/allow, **plan mode**, auto mode, sandbox | **Always** — before installing anything |
 
 **Phase 2: Core Tooling**
 
-| # | Chapter | What it covers |
-|---|---------|----------------|
-| 5 | [Plugins](chapters/05-plugins.md) | Official marketplace, LSP plugins, service integrations, community marketplaces, budget |
-| 6 | [MCP Servers](chapters/06-mcp.md) | Tool search (deferred loading), transports, scopes, verified server recommendations |
-| 7 | [Hooks](chapters/07-hooks.md) | All 30 lifecycle events, 5 hook types, ready-to-use configuration |
+| # | Chapter | What it covers | Read when |
+|---|---------|----------------|-----------|
+| 5 | [Plugins](chapters/05-plugins.md) | Official marketplace, LSP plugins, service integrations, community marketplaces, budget | Language has an LSP plugin, or team services have official plugins |
+| 6 | [MCP Servers](chapters/06-mcp.md) | Tool search (deferred loading), transports, scopes, verified server recommendations | External services needed beyond plugins (DBs, browsers, trackers) |
+| 7 | [Hooks](chapters/07-hooks.md) | All 30 lifecycle events, 5 hook types, ready-to-use configuration | **Always** — must-hold rules belong in hooks |
 
 **Phase 3: Project-Specific Configuration**
 
-| # | Chapter | What it covers |
-|---|---------|----------------|
-| 8 | [Skills & Slash Commands](chapters/08-skills.md) | SKILL.md format, invocation control, arguments, bundled skills, community skills |
-| 9 | [Subagents](chapters/09-subagents.md) | Frontmatter reference, nesting, memory, worktree isolation, recommended agents |
-| 10 | [Agent Teams, Workflows & Multi-Agent Networks](chapters/10-agent-teams-networks.md) | Agent teams, dynamic workflows / ultracode, background agents, Agent SDK, MCP & A2A interconnect |
+| # | Chapter | What it covers | Read when |
+|---|---------|----------------|-----------|
+| 8 | [Skills & Slash Commands](chapters/08-skills.md) | SKILL.md format, invocation control, arguments, bundled skills, community skills | Repeated procedures exist worth encoding as commands |
+| 9 | [Subagents](chapters/09-subagents.md) | Frontmatter reference, nesting, memory, worktree isolation, recommended agents | Delegatable roles fit (review, planning, build fixing) |
+| 10 | [Agent Teams, Workflows & Multi-Agent Networks](chapters/10-agent-teams-networks.md) | Agent teams, dynamic workflows / ultracode, background agents, Agent SDK, MCP & A2A interconnect | Multi-agent coordination or Agent SDK integration needed |
 
 **Phase 4: Advanced Workflows**
 
-| # | Chapter | What it covers |
-|---|---------|----------------|
-| 11 | [Context Management](chapters/11-context-management.md) | Budgets, `/compact`, `/btw`, `/branch`, checkpoints |
-| 12 | [Monorepos & Parallel Workflows](chapters/12-monorepo-parallel.md) | Hierarchical CLAUDE.md, `claudeMdExcludes`, native worktrees (`claude -w`), background sessions |
-| 13 | [Editors & CI/CD](chapters/13-editors-cicd.md) | IDE integrations, `claude-code-action@v1`, headless mode |
-| 14 | [Vercel Integration](chapters/14-vercel.md) | Vercel agent skills, official MCP, deploy skill |
+| # | Chapter | What it covers | Read when |
+|---|---------|----------------|-----------|
+| 11 | [Context Management](chapters/11-context-management.md) | Budgets, `/compact`, `/btw`, `/branch`, checkpoints | Long sessions, context pressure, or large codebases |
+| 12 | [Monorepos & Parallel Workflows](chapters/12-monorepo-parallel.md) | Hierarchical CLAUDE.md, `claudeMdExcludes`, native worktrees (`claude -w`), background sessions | Repo is a monorepo, or parallel sessions are used |
+| 13 | [Editors & CI/CD](chapters/13-editors-cicd.md) | IDE integrations, `claude-code-action@v1`, headless mode | Project has CI, or IDE integration is wanted |
+| 14 | [Vercel Integration](chapters/14-vercel.md) | Vercel agent skills, official MCP, deploy skill | Project deploys to Vercel |
 
 **Reference**
 
-| # | Chapter | What it covers |
-|---|---------|----------------|
-| 15 | [Reference](chapters/15-reference.md) | Keyboard shortcuts, built-in commands, CLI flags, model configuration, troubleshooting |
+| # | Chapter | What it covers | Read when |
+|---|---------|----------------|-----------|
+| 15 | [Reference](chapters/15-reference.md) | Keyboard shortcuts, built-in commands, CLI flags, model configuration, troubleshooting | Looking up a command/flag/shortcut/model, or troubleshooting |
+
+---
+
+## For Agents: Self-Configuration Procedure
+
+This guide is written to be executed by a Claude agent configuring a project. Machine-readable index: [`llms.txt`](llms.txt). Each chapter's YAML frontmatter carries `description`, `read_when`, `verified`, and `claude_code_version`. Outside a clone, fetch raw files from `https://raw.githubusercontent.com/AlexandrG539/claude-code-setup-guide/main/<path>` (e.g. `chapters/04-permissions.md`).
+
+**Procedure** (standing instructions for the whole configuration task):
+
+1. Inspect the project first: languages, package manager, frameworks, repo shape (single package or monorepo), existing `.claude/` and `CLAUDE.md`, CI provider, deploy target. Route by facts found, not by assumptions.
+2. Read the core chapters in order: [1](chapters/01-architecture.md), [2](chapters/02-claude-md-memory.md), [4](chapters/04-permissions.md), [7](chapters/07-hooks.md). Read the others only when their **Read when** condition (TOC above, or chapter frontmatter) matches the project.
+3. Apply configuration in chapter order: CLAUDE.md → permissions → plugins/MCP → hooks → skills/subagents. Use the chapter templates verbatim; adapt only project-specific values (commands, paths, branch names).
+4. Rules that must always hold (formatting, protected files, protected branches) go into hooks, not CLAUDE.md prose — hooks are enforced, prose is advisory.
+5. Verify before finishing: `/memory` (CLAUDE.md loaded), `/permissions` (rules registered, correct source file), `/hooks` (hooks registered), `/context` (nothing oversized). Confirm `.claude/settings.json` parses as valid JSON.
+
+**Boundaries:**
+
+| Always | Ask the user first | Never |
+|--------|--------------------|-------|
+| Compare each chapter's `claude_code_version` to the installed `claude --version`; if the CLI is newer, re-verify changed behavior against the [official docs](https://code.claude.com/docs) before applying | Overwriting an existing CLAUDE.md, settings file, or hook | Put secrets or credentials in CLAUDE.md, settings files, or committed MCP configs |
+| Keep CLAUDE.md lean — only facts Claude can't infer from the code (Ch. 2 rubric) | Installing plugins or MCP servers | Enable `bypassPermissions` or weaken existing deny rules |
+| Prefer each chapter's single recommended default; deviate only for a stated project-specific reason | Adding `allow` rules broader than the Ch. 4 template | Delete existing project configuration |
 
 ---
 
@@ -66,7 +88,7 @@ The guide is split into chapters. Read them in order for a from-scratch setup, o
 
 ## What's New Since the May 2026 Revision
 
-This revision was produced by re-verifying every claim against official sources (July 3, 2026). Meaningful changes:
+This revision was produced by re-verifying every claim against official sources (July 3–7, 2026). Meaningful changes:
 
 | Area | Change | See |
 |------|--------|-----|
@@ -82,6 +104,8 @@ This revision was produced by re-verifying every claim against official sources 
 | **Hooks** | Event list grew to ~30 (`UserPromptExpansion`, `PermissionDenied`, `PostToolBatch`, `TaskCreated`, `CwdChanged`, `FileChanged`, …); fifth hook type `mcp_tool`; `$CLAUDE_PROJECT_DIR` now officially documented | [Ch. 7](chapters/07-hooks.md) |
 | **Skills** | Named arguments, `$ARGUMENTS[N]`, dynamic context injection (`` !`cmd` ``), skill stacking (2.1.199), `disallowed-tools`; clarified that `allowed-tools` *pre-approves* rather than restricts | [Ch. 8](chapters/08-skills.md) |
 | **GitHub Actions** | Official path is `anthropics/claude-code-action@v1` + `/install-github-app` (raw `claude -p` piping demoted to simple cases) | [Ch. 13](chapters/13-editors-cicd.md) |
+| **Workflow size (2.1.202)** | New **Dynamic workflow size** setting in `/config` — advisory agent-count guideline (`unrestricted`/`small`/`medium`/`large`) for the scripts Claude writes | [Ch. 10](chapters/10-agent-teams-networks.md) |
+| **`/review` (2.1.202)** | `/review <pr>` is single-pass again; multi-agent PR review is `/code-review <level> <PR#>` | [Ch. 15](chapters/15-reference.md) |
 
 ### Corrections to the previous revision (verified against live registries)
 

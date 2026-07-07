@@ -1,8 +1,15 @@
+---
+description: "Hooks: all ~30 lifecycle events, the five hook types, and a ready-to-use settings.json with auto-format, file protection, branch protection, and notifications. Read when a rule must be enforced every time — hooks are deterministic; CLAUDE.md prose is advisory."
+read_when:
+  - "always — core chapter, must-hold rules belong in hooks, not prose"
+topics: [hooks, lifecycle-events, automation, enforcement, settings-json]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 7: Hooks — Deterministic Automation
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [MCP Servers](06-mcp.md) · **Next:** [Skills & Commands](08-skills.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [MCP Servers](06-mcp.md) · **Next:** [Skills & Commands](08-skills.md)
 
 Hooks execute at specific lifecycle events. They are NOT AI — they run deterministically every time. This is what makes them powerful: formatting will always happen, not just when Claude "remembers" to do it.
 

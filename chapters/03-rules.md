@@ -1,8 +1,17 @@
+---
+description: "Modular rule files in .claude/rules/: path-scoped rules, glob patterns, sharing via symlinks, and five ready-to-use rule files. Read when a project needs coding standards beyond a minimal CLAUDE.md."
+read_when:
+  - "team coding standards span multiple domains (style, testing, security, git)"
+  - "CLAUDE.md is growing past ~60 lines and needs splitting"
+  - "different rules should apply to different paths"
+topics: [rules, path-scoped-rules, coding-standards, glob-patterns]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 3: Rules — Modular Guidelines
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [CLAUDE.md & Memory](02-claude-md-memory.md) · **Next:** [Permissions](04-permissions.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [CLAUDE.md & Memory](02-claude-md-memory.md) · **Next:** [Permissions](04-permissions.md)
 
 Rules are markdown files in `.claude/rules/` that organize guidelines by topic. Rules **without** `paths` frontmatter load at launch with the same priority as `.claude/CLAUDE.md`. Rules **with** `paths` frontmatter load only when Claude works with matching files — this is the main tool for keeping always-on context small.
 

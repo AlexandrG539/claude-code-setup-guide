@@ -1,8 +1,15 @@
+---
+description: "Writing CLAUDE.md project memory: content rules, copy-paste templates (root, global, local), imports, AGENTS.md compatibility, auto memory, and /init. Read when creating or revising a project's CLAUDE.md."
+read_when:
+  - "always — core chapter, needed for every project's initial setup"
+topics: [claude-md, memory, agents-md, auto-memory, templates, init]
+verified: 2026-07-07
+claude_code_version: "2.1.202"
+---
+
 # Chapter 2: CLAUDE.md & Memory
 
-> Part of the [Claude Code Configuration Guide](../README.md) · Verified against official docs, 2026-07-04 (Claude Code 2.1.201)
->
-> **Previous:** [Architecture](01-architecture.md) · **Next:** [Rules](03-rules.md)
+> Part of the [Claude Code Configuration Guide](../README.md) · **Previous:** [Architecture](01-architecture.md) · **Next:** [Rules](03-rules.md)
 
 CLAUDE.md is loaded into every request. It defines what Claude always knows about your project. Alongside it, **auto memory** lets Claude accumulate its own notes per repository.
 
