@@ -57,9 +57,10 @@ This guide is written to be executed by a Claude agent configuring a project. Ma
 
 1. Inspect the project first: languages, package manager, frameworks, repo shape (single package or monorepo), existing `.claude/` and `CLAUDE.md`, CI provider, deploy target. Route by facts found, not by assumptions.
 2. Read the core chapters in order: [1](chapters/01-architecture.md), [2](chapters/02-claude-md-memory.md), [4](chapters/04-permissions.md), [7](chapters/07-hooks.md). Read the others only when their **Read when** condition (TOC above, or chapter frontmatter) matches the project.
-3. Apply configuration in chapter order: CLAUDE.md → permissions → plugins/MCP → hooks → skills/subagents. Use the chapter templates verbatim; adapt only project-specific values (commands, paths, branch names).
+3. Apply configuration in chapter order: CLAUDE.md → permissions → plugins/MCP → hooks → skills/subagents. Use the chapter templates verbatim; adapt only project-specific values (commands, paths, branch names), and omit template sections that don't apply to the project type (a docs-only repo has no test or typecheck commands).
 4. Rules that must always hold (formatting, protected files, protected branches) go into hooks, not CLAUDE.md prose — hooks are enforced, prose is advisory.
-5. Verify before finishing: `/memory` (CLAUDE.md loaded), `/permissions` (rules registered, correct source file), `/hooks` (hooks registered), `/context` (nothing oversized). Confirm `.claude/settings.json` parses as valid JSON.
+5. Verify what is checkable immediately: settings files parse as valid JSON, hook commands exit correctly when fed sample stdin (test both the pass and the block path), referenced scripts exist, templates landed where intended. Then ask the user to confirm in a **fresh session** — `/memory` (CLAUDE.md loaded), `/permissions` (rules registered, correct source file), `/hooks` (hooks registered), `/context` (nothing oversized) — because these commands reflect config loaded at session start, so the configuring session cannot observe its own output with them.
+6. Expect harness guardrails: in auto or managed permission modes, writing settings files that grant `allow` rules, and pushing to protected branches, may be blocked by the permission classifier for user review. This is expected — present the proposed content to the user and continue after approval; do not retry the blocked call unchanged.
 
 **Boundaries:**
 
