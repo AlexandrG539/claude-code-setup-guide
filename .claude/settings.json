@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(python3 scripts/validate_guide.py)",
+      "Bash(npm view *)",
+      "Bash(curl -s https://raw.githubusercontent.com/*)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:platform.claude.com)",
+      "WebFetch(domain:anthropic.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "WebFetch(domain:pypi.org)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Read(.env*)",
+      "Read(**/*.pem)",
+      "Read(**/*secret*)",
+      "Read(**/*credential*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "fp=$(jq -r '.tool_input.file_path // empty'); case \"$fp\" in *chapters/*.md|*README.md|*llms.txt) cd \"$CLAUDE_PROJECT_DIR\" && python3 scripts/validate_guide.py 1>&2 || exit 2;; esac"
+          }
+        ]
+      }
+    ]
+  }
+}

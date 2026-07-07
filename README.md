@@ -116,6 +116,7 @@ This revision was produced by re-verifying every claim against official sources 
 - ❌ `\ide` → ✅ `/ide`. Several keyboard-shortcut fixes (`Shift+Tab` mode cycling, `Ctrl+O` transcript viewer, `Esc Esc` rewind semantics) — see [Ch. 15](chapters/15-reference.md).
 - Repo renames: `affaan-m/everything-claude-code` → **`affaan-m/ECC`**; `ruvnet/claude-flow` → **`ruvnet/ruflo`**.
 - Vercel MCP is no longer read-only: it manages teams/projects/deployments via OAuth at `https://mcp.vercel.com`.
+- ❌ Earlier revisions' blocking-hook templates (Ch. 7) piped stdin into `{ …; exit 2; } || true`, which swallowed the exit code — the file/branch-protection hooks printed `BLOCKED` but never blocked → ✅ capture stdin via command substitution and `exit 2` at top level. Found 2026-07-07 by executing the guide's own self-configuration procedure.
 
 ## Sources
 

@@ -106,7 +106,7 @@ Hooks go in `settings.json` (project or global), or use the interactive `/hooks`
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path // empty' | { read fp; blocked=false; for pattern in .env package-lock.json pnpm-lock.yaml yarn.lock .git/ node_modules/ dist/ .next/ build/; do case \"$fp\" in *\"$pattern\"*) blocked=true;; esac; done; if $blocked; then echo \"BLOCKED: Writing to $fp is not allowed.\" >&2; exit 2; fi; } || true"
+            "command": "fp=$(jq -r '.tool_input.file_path // empty'); blocked=false; for pattern in .env package-lock.json pnpm-lock.yaml yarn.lock .git/ node_modules/ dist/ .next/ build/; do case \"$fp\" in *\"$pattern\"*) blocked=true;; esac; done; if $blocked; then echo \"BLOCKED: Writing to $fp is not allowed.\" >&2; exit 2; fi"
           }
         ]
       },
@@ -115,7 +115,7 @@ Hooks go in `settings.json` (project or global), or use the interactive `/hooks`
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.command // empty' | { read cmd; branch=$(cd \"$CLAUDE_PROJECT_DIR\" && git rev-parse --abbrev-ref HEAD 2>/dev/null); if echo \"$cmd\" | grep -qE '^git commit' && echo \"$branch\" | grep -qE '^(main|master|dev)$'; then echo \"BLOCKED: Never commit directly on $branch. Create a feature branch first.\" >&2; exit 2; fi; if echo \"$cmd\" | grep -qE 'git push.*(origin )?(main|master|dev)( |$)'; then echo \"BLOCKED: Never push directly to $branch. Merge via PR only.\" >&2; exit 2; fi; } || true"
+            "command": "cmd=$(jq -r '.tool_input.command // empty'); branch=$(cd \"$CLAUDE_PROJECT_DIR\" && git rev-parse --abbrev-ref HEAD 2>/dev/null); if echo \"$cmd\" | grep -qE '^git commit' && echo \"$branch\" | grep -qE '^(main|master|dev)$'; then echo \"BLOCKED: Never commit directly on $branch. Create a feature branch first.\" >&2; exit 2; fi; if echo \"$cmd\" | grep -qE 'git push.*(origin )?(main|master|dev)( |$)'; then echo \"BLOCKED: Never push directly to $branch. Merge via PR only.\" >&2; exit 2; fi"
           }
         ]
       }
@@ -155,6 +155,8 @@ Hooks go in `settings.json` (project or global), or use the interactive `/hooks`
 | PreToolUse (branch protection) | Before git commit/push | Block commits on protected branches and direct pushes |
 | Stop (console.log scanner) | When Claude finishes | Scan modified files for leftover debug statements |
 | Notification | When Claude needs input | Desktop notification (Linux/macOS) |
+
+**Blocking-hook shell pattern (important):** read stdin with command substitution (`fp=$(jq -r …)`) and call `exit 2` at the top level, as above. Do **not** pipe stdin into a group — `jq … | { read fp; …; exit 2; } || true` exits only the pipeline's subshell, and the trailing `|| true` rewrites the status to 0, so the hook prints `BLOCKED` but never actually blocks. (Verified 2026-07-07; earlier revisions of this guide shipped the broken form.)
 
 ## Advanced Hook Types
 
