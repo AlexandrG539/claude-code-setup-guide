@@ -1,11 +1,11 @@
 ---
-description: "Project documentation for AI agents: layered structure (CLAUDE.md → rules → skills → docs/ with a router index), on-demand navigation via read-when triggers, and an AI maintenance workflow that keeps docs in sync with code — content rules, freshness stamps, validation hooks, an /update-docs skill, and scheduled doc-sync agents. Read when project knowledge outgrows CLAUDE.md or docs drift from the code."
+description: "Project documentation for AI agents: layered structure (CLAUDE.md → rules → skills → docs/ with a router index), on-demand navigation via read-when triggers, a machine-readable change→doc trigger map, and an AI maintenance workflow that keeps docs in sync with code — content rules, freshness stamps, validation and drift hooks, an /update-docs skill, and scheduled doc-sync agents. Read when project knowledge outgrows CLAUDE.md or docs drift from the code."
 read_when:
   - "the project needs documentation that agents can find and load on demand"
   - "project knowledge outgrows CLAUDE.md (architecture, domain, status docs)"
   - "docs have drifted from the code or tech stack, or a doc-maintenance workflow is being set up"
 topics: [documentation, docs-structure, progressive-disclosure, navigation, drift, doc-sync, freshness, maintenance]
-verified: 2026-07-15
+verified: 2026-07-16
 claude_code_version: "2.1.202"
 ---
 
@@ -83,6 +83,15 @@ skip the rest. Keep this table in sync with the files (validated by hook).
 | status.md | Project stage, current focus, known gaps, non-goals | Planning work, or judging whether a gap is known |
 ```
 
+### Scaling: section indexes (past ~15 docs)
+
+One router table gets noisy past roughly 15 docs. Then — and only then — split into section indexes: `docs/INDEX.md` routes to `docs/<section>/INDEX.md`, which routes to docs. Rules that keep this cheap:
+
+- **At most two hops, every hop an explicit table** with a one-line read-when description per entry — never a doc the agent must skim to find the next link.
+- **Keep each index under ~40 lines**, so a hop costs a few hundred tokens.
+- Add the navigation rule to the root router: *"Never browse docs file-by-file — route via the indexes."*
+- The one-level-deep rule still governs *content*: docs never chain to other docs the reader must follow; only indexes point at docs.
+
 ### Template: doc frontmatter
 
 ```markdown
@@ -90,12 +99,15 @@ skip the rest. Keep this table in sync with the files (validated by hook).
 description: "Billing domain rules: proration, tax edge cases, refund constraints. Read when touching payments, invoices, or subscriptions."
 read_when:
   - "touching payments, invoices, or subscriptions"
-verified: 2026-07-15        # last date a human or agent checked this against the code
-sources: [src/billing/, "Stripe API v2026-06"]   # what to verify against
+verified: 2026-07-15          # last date a human or agent checked this against the code
+sources:                      # change→doc trigger map: what this doc makes claims about
+  - "src/billing/**"
+  - "package.json"            # stack claims
+  - "Stripe API v2026-06"     # external contracts (not matchable, but tells the updater what to check)
 ---
 ```
 
-The `verified` stamp is the freshness mechanism the maintenance workflow (below) reads and updates. The `sources` line tells the updating agent *what to check the doc against* — without it, re-verification degenerates into guessing.
+The `verified` stamp is the freshness mechanism the maintenance workflow reads and updates. `sources` is the **change→doc trigger map** — glob paths (plus external contracts) the doc makes claims about. One field, three consumers: the drift hook (a changed path matching a doc's sources marks that doc suspect), the `/update-docs` skill (`git log` the sources since the stamp), and a human asking "what must I update when I change X". Keep globs narrow — `src/**` on every doc makes every change suspect and the map useless. Optionally render an aggregated "what changed → which doc" table in the router for humans, but *generate it from the frontmatter* — hand-maintaining the mapping in two places is itself doc drift.
 
 ## Navigation: Making Agents Use the Docs
 
@@ -135,11 +147,21 @@ Non-derivable content only; `Current method` / `Old patterns` for evolving topic
 
 Official guidance, verbatim for CLAUDE.md and applicable to all agent docs: give the docs an owner, check them into git, and **review changes to them like code**. Test instruction changes empirically — observe whether agent behavior actually shifts. If Claude already does something correctly without an instruction, delete the instruction or convert it to a hook.
 
-### 3. Deterministic checks: hooks
+### 3. Deterministic checks: hooks with properly set triggers
 
-Prose rules are advisory; hooks are enforced ([Ch. 7](07-hooks.md)). Two hooks cover docs:
+Prose rules are advisory; hooks are enforced ([Ch. 7](07-hooks.md)). "Update the docs when code changes" written in CLAUDE.md is a policy the model can forget under context pressure — automation means picking the right trigger for each check. The full trigger architecture:
 
-**Validator (PostToolUse)** — after any edit to a doc, check the invariants. Ask Claude to generate `scripts/validate_docs.py` for your repo enforcing: every `docs/*.md` has the frontmatter fields above, is linked from the router table, stays under 500 lines, and has no broken relative links. Then:
+| Trigger | Fires | Catches | Cost / failure mode |
+|---------|-------|---------|---------------------|
+| `PostToolUse` on `Edit\|Write` of `docs/**` | every doc edit | structural invariants (frontmatter, router links, size) | milliseconds; none |
+| `Stop` running the drift check | end of every turn | code changed, mapped doc didn't | one `git diff` + glob match; nags on WIP if globs are too broad |
+| `PreToolUse` on `git commit` (gate) | per commit | enforces docs-in-same-PR, hard | blocks WIP commits — needs an override tag |
+| `/update-docs` skill | on demand | accumulated drift, claim-level | agent tokens |
+| Scheduled Routine / CI on merge | per merge or weekly | drift that slipped past everything | PR review load |
+
+The first two are the default; the commit gate is the strict escape hatch; 4–5 are mechanisms below. All hook checks are driven by the same `sources` trigger map from the frontmatter — one mapping, every cadence.
+
+**Validator (PostToolUse)** — ask Claude to generate `scripts/validate_docs.py` enforcing: every `docs/**/*.md` has the frontmatter fields above with parseable `verified` date and `sources` globs, is linked from its index, stays under 500 lines, no broken relative links, and (with section indexes) every index row points at an existing file and vice versa. Give it a `--drift` mode: diff = `git diff --name-only HEAD` (or `--staged`); for each doc whose `sources` globs match a changed path while the doc itself is *not* in the diff, print `DRIFT: <changed path> → <doc> may be stale (verified <date>). Run /update-docs <doc>.` Then:
 
 ```json
 {
@@ -154,25 +176,14 @@ Prose rules are advisory; hooks are enforced ([Ch. 7](07-hooks.md)). Two hooks c
           }
         ]
       }
-    ]
-  }
-}
-```
-
-(This guide's own repo runs exactly this pattern — `scripts/validate_guide.py` as a PostToolUse hook.)
-
-**Drift reminder (Stop)** — when Claude finishes a turn that changed source files but no docs, surface it:
-
-```json
-{
-  "hooks": {
+    ],
     "Stop": [
       {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && changed=$(git diff --name-only HEAD 2>/dev/null); if echo \"$changed\" | grep -qE '^src/' && ! echo \"$changed\" | grep -qE '^(docs/|CLAUDE\\.md)'; then echo 'Docs check: source changed but no docs updated. If architecture, stack, domain rules, or status changed, run /update-docs.' >&2; fi || true"
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && python3 scripts/validate_docs.py --drift >&2 || true"
           }
         ]
       }
@@ -181,7 +192,31 @@ Prose rules are advisory; hooks are enforced ([Ch. 7](07-hooks.md)). Two hooks c
 }
 ```
 
-Adjust `^src/` to your source roots. **Escape hatch:** change the `fi` branch to `exit 2` to make it blocking — Claude must then update the docs (or explain) before stopping. Default to the reminder: most source changes legitimately need no doc update, and a blocking hook that cries wolf trains everyone to route around it.
+(This guide's own repo runs the validator pattern — `scripts/validate_guide.py` as a PostToolUse hook; it caught real errors while this chapter was being written.)
+
+The Stop-hook drift check stays **non-blocking** by default: most source changes legitimately need no doc update, and a blocking hook that cries wolf trains everyone to route around it. Precision comes from the trigger map, not from blocking — narrow `sources` globs make a drift warning mean something.
+
+**Escape hatch — commit gate** for teams that want docs-in-same-PR enforced, not requested:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command // empty'); if echo \"$cmd\" | grep -qE '^git commit' && ! echo \"$cmd\" | grep -q 'skip-docs'; then cd \"$CLAUDE_PROJECT_DIR\" && python3 scripts/validate_docs.py --drift --staged >&2 || exit 2; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+`--drift --staged` checks staged changes and exits non-zero on drift, so `exit 2` blocks the commit and feeds the DRIFT lines back to Claude, which must update the mapped docs (or commit with `skip-docs` in the message for genuine WIP). Follow the blocking-hook shell pattern from [Ch. 7](07-hooks.md) exactly — stdin via command substitution, `exit 2` at top level.
 
 ### 4. On-demand repair: the `/update-docs` skill
 
@@ -203,8 +238,10 @@ allowed-tools: Read, Grep, Glob, Bash(git diff *), Bash(git log *)
 Sync docs with reality. Scope: $ARGUMENTS (if empty, determine scope from git).
 
 1. **Find what changed.** If no argument given: for each doc, run
-   `git log --oneline --since=<its verified date> -- <its sources paths>`.
-   Docs whose sources changed since their stamp are the work list.
+   `git log --oneline --since=<its verified date> -- <its sources globs>`.
+   Docs whose sources changed since their stamp are the work list — the
+   same trigger map the drift hook uses, applied to history instead of
+   the working tree.
 2. **Map changes to docs** using the read-when table in docs/README.md.
    Changes matching no doc's scope may need a NEW doc — propose, don't
    auto-create, unless the router has a place for it.
@@ -242,7 +279,8 @@ changes and a table of what drifted; do not push to main.
 |-----------|-----------|
 | Doc describes something the code already states | Delete it (prevention beats sync) |
 | Doc invariants (frontmatter, router links, size) | Validator hook — deterministic |
-| Source changed, docs didn't | Stop-hook reminder → `/update-docs` |
+| Source changed, docs didn't | Stop-hook drift check (trigger map) → `/update-docs` |
+| Team requires docs updated in the same PR, always | Commit-gate hook (`--drift --staged`, exit 2) |
 | Big merge / stack upgrade landed | `/update-docs` immediately |
 | Nobody remembers to do any of this | Scheduled Routine opening doc-sync PRs |
 | Agent reports doc-vs-code mismatch mid-task | Fix the doc in the same PR as the code |
@@ -251,6 +289,7 @@ changes and a table of what drifted; do not push to main.
 
 - **Agents ignore the docs:** the router pointer is missing from CLAUDE.md, or read-when triggers describe topics instead of situations. Rewrite triggers as "touching X / changing Y".
 - **Agents load too many docs:** topics overlap. Merge or re-split so any task matches at most one or two rows.
+- **Drift warnings fire on nearly every turn:** `sources` globs are too broad — a doc claiming `src/**` claims everything. Narrow each doc's globs to the paths it actually makes claims about.
 - **`/update-docs` rewrites too much:** its scope is the diff since the `verified` stamps — commit doc updates regularly so the window stays small, and keep `sources` paths narrow.
 - **Docs keep drifting anyway:** they contain derivable content. Apply the include/exclude table and let `/doctor` (v2.1.206+) demonstrate the technique on CLAUDE.md.
 

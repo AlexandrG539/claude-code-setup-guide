@@ -40,7 +40,7 @@ The guide is split into chapters. Each chapter's YAML frontmatter states what it
 | 12 | [Monorepos & Parallel Workflows](chapters/12-monorepo-parallel.md) | Hierarchical CLAUDE.md, `claudeMdExcludes`, native worktrees (`claude -w`), background sessions | Repo is a monorepo, or parallel sessions are used |
 | 13 | [Editors & CI/CD](chapters/13-editors-cicd.md) | IDE integrations, `claude-code-action@v1`, headless mode | Project has CI, or IDE integration is wanted |
 | 14 | [Vercel Integration](chapters/14-vercel.md) | Vercel agent skills, official MCP, deploy skill | Project deploys to Vercel |
-| 16 | [Project Documentation for Agents](chapters/16-project-documentation.md) | Layered docs structure, router index + read-when navigation, maintenance workflow (validator/drift hooks, `/update-docs` skill, scheduled doc-sync) | Project knowledge outgrows CLAUDE.md, or docs drift from the code |
+| 16 | [Project Documentation for Agents](chapters/16-project-documentation.md) | Layered docs structure, router index + read-when navigation, change→doc trigger map, maintenance automation (validator/drift/commit-gate hooks, `/update-docs` skill, scheduled doc-sync) | Project knowledge outgrows CLAUDE.md, or docs drift from the code |
 
 **Reference**
 
