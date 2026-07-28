@@ -4,8 +4,8 @@ read_when:
   - "the project's language has an LSP plugin (TypeScript, Python, Rust, Go, Java, ...)"
   - "the team uses services with official plugins (GitHub, Slack, Sentry, ...)"
 topics: [plugins, lsp, marketplace, service-integrations]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 5: Plugins — Packaged Extensions

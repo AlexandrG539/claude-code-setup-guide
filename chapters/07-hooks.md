@@ -3,8 +3,8 @@ description: "Hooks: all ~30 lifecycle events, the five hook types, and a ready-
 read_when:
   - "always — core chapter, must-hold rules belong in hooks, not prose"
 topics: [hooks, lifecycle-events, automation, enforcement, settings-json]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 7: Hooks — Deterministic Automation
@@ -33,7 +33,7 @@ The full official event list as of July 2026:
 
 | Event | When It Fires |
 |-------|--------------|
-| `SessionStart` | Session begins or resumes (matchers: `startup`, `resume`, `clear`, `compact`) |
+| `SessionStart` | Session begins or resumes (matchers: `startup`, `resume`, `clear`, `compact`, `fork` — `fork` fires for `--fork-session`, the `/fork` background copy, or `/branch`; before 2.1.214 forked sessions reported `resume`) |
 | `Setup` | On `--init` or `--maintenance` |
 | `UserPromptSubmit` | When you press Enter — inject context, validate, log |
 | `UserPromptExpansion` | When a prompt is expanded (commands/skills) |
@@ -53,6 +53,7 @@ The full official event list as of July 2026:
 | `InstructionsLoaded` | CLAUDE.md / rules load — debug which instruction files load and why |
 | `ConfigChange` | Settings modified mid-session |
 | `CwdChanged` | Working directory changed (`/cd`) |
+| `DirectoryAdded` | A new working directory registered mid-session via `/add-dir` or the SDK (2.1.219+, per the changelog; not yet in the hooks reference) |
 | `FileChanged` | Watched file changed |
 | `WorktreeCreate` / `WorktreeRemove` | Git worktree lifecycle |
 | `PreCompact` / `PostCompact` | Around context compaction — preserve/re-inject state |

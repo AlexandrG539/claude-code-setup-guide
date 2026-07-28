@@ -4,8 +4,8 @@ read_when:
   - "project needs external services: databases, browsers, issue trackers, documentation, deployment platforms"
   - "an MCP server misbehaves or its tools seem missing"
 topics: [mcp, tool-search, transports, scopes, servers]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 6: MCP Servers — External Service Connections
@@ -52,7 +52,9 @@ claude mcp get <name>
 claude mcp remove <name>
 ```
 
-Inside a session: `/mcp` shows status, tool counts, and handles **OAuth authentication**; `/mcp enable|disable <server>|all` toggles connections; `/mcp reconnect <server>` fixes a dropped one. HTTP/SSE servers auto-reconnect with exponential backoff (5 attempts). SSE transport is deprecated — prefer HTTP.
+Inside a session: `/mcp` shows status, tool counts, and handles **OAuth authentication**; `/mcp enable|disable <server>|all` toggles connections; `/mcp reconnect <server>` fixes a dropped one. HTTP/SSE servers auto-reconnect with exponential backoff (5 attempts). SSE transport is deprecated — prefer HTTP. When a server fails to connect, `/mcp` and `claude mcp list` show the HTTP status and error text (2.1.219+).
+
+MCP tool calls running longer than 2 minutes automatically move to the background so the session stays usable — configure the threshold or disable with `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` (2.1.212+). Per-server `request_timeout_ms` in `--mcp-config` / `.mcp.json` is honored (a bug ignoring it was fixed in 2.1.206).
 
 ### Scopes
 

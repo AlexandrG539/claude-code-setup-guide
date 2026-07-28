@@ -4,8 +4,8 @@ read_when:
   - "the project is a monorepo (multiple packages/apps in one repo)"
   - "running several Claude sessions in parallel on one repo"
 topics: [monorepo, worktrees, parallel-sessions, claude-md-hierarchy, tmux]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 12: Monorepos & Parallel Workflows
@@ -120,11 +120,12 @@ For **coordinated** parallelism (agents that talk to each other), see [Agent Tea
 ### Conversation branching
 
 ```
-/branch [name]     # fork the conversation at this point; original stays in /resume
-/fork              # hand a side task to a background subagent instead
+/branch [name]     # fork the conversation at this point in-session; original stays in /resume
+/fork              # copy the conversation into a NEW BACKGROUND SESSION (own row in claude agents)
+/subtask           # hand a side task to an in-session subagent instead
 ```
 
-(Naming changed vs. older guides: `/fork` used to fork the conversation; that job now belongs to `/branch`.)
+(Naming has shifted across 2026 releases: before 2.1.212 the subagent hand-off was called `/fork`. Since 2.1.212, `/fork` copies the conversation into an independent background session and `/subtask` is the subagent hand-off; `/branch` remains the in-session fork.)
 
 ### Session persistence
 

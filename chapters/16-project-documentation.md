@@ -5,8 +5,8 @@ read_when:
   - "project knowledge outgrows CLAUDE.md (architecture, domain, status docs)"
   - "docs have drifted from the code or tech stack, or a doc-maintenance workflow is being set up"
 topics: [documentation, docs-structure, progressive-disclosure, navigation, drift, doc-sync, freshness, maintenance]
-verified: 2026-07-16
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 16: Project Documentation for Agents

@@ -3,8 +3,8 @@ description: "Writing CLAUDE.md project memory: content rules, copy-paste templa
 read_when:
   - "always — core chapter, needed for every project's initial setup"
 topics: [claude-md, memory, agents-md, auto-memory, templates, init]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 2: CLAUDE.md & Memory
@@ -174,7 +174,7 @@ Alongside the CLAUDE.md you write, Claude writes notes for itself across session
 - **Location:** machine-local at `~/.claude/projects/<project>/memory/`, where `<project>` is derived from the git repo — all worktrees and subdirectories of one repo share one memory directory. Outside a git repo, the project root is used instead.
 - **What's loaded at session start:** the first 200 lines / 25KB of `MEMORY.md` (an index Claude maintains). Topic files (`debugging.md`, `api-conventions.md`, …) load on demand.
 - **What Claude saves:** build commands it figured out, debugging insights, code-style preferences observed from your corrections, workflow habits. It decides what's worth keeping.
-- **Audit:** run `/memory` to browse all loaded memory files, open them in your editor, or toggle the feature. Everything is plain markdown you can edit or delete.
+- **Audit:** run `/memory` to browse all loaded memory files, open them in your editor, or toggle the feature. Everything is plain markdown you can edit or delete (memory file frontmatter carries an ISO `modified` timestamp since 2.1.214).
 - **Disable:** `"autoMemoryEnabled": false` in settings, or `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`.
 - **Custom location:** `autoMemoryDirectory` setting (absolute or `~/` path). When set in project settings, it's honored only after you accept the workspace trust dialog.
 

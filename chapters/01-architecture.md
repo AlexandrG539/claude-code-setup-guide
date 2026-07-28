@@ -3,8 +3,8 @@ description: "Claude Code extension layers, global vs project directory layout, 
 read_when:
   - "always — core chapter, read before configuring anything"
 topics: [architecture, file-layout, extension-layers, settings-precedence, context-costs]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 1: Architecture Overview & File Layout

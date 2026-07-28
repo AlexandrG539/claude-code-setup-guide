@@ -4,8 +4,8 @@ read_when:
   - "looking up a command, CLI flag, keyboard shortcut, or model alias"
   - "troubleshooting: context pressure, ignored CLAUDE.md, hooks not firing, MCP or plugin failures, slow performance"
 topics: [reference, commands, cli-flags, keyboard-shortcuts, models, troubleshooting]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 15: Reference — Shortcuts, Commands, CLI Flags, Models, Troubleshooting
@@ -53,8 +53,9 @@ claude_code_version: "2.1.202"
 | `/context [all]` | Context usage grid with optimization suggestions |
 | `/compact [instructions]` | Summarize the conversation to free space |
 | `/clear [name]` | New conversation (old one stays in `/resume`; aliases `/reset`, `/new`) |
-| `/branch [name]` | Fork the conversation at this point (original preserved) |
-| `/fork` | Hand a side task to a background subagent |
+| `/branch [name]` | Fork the conversation at this point in-session (original preserved) |
+| `/fork` | Copy the conversation into a new **background session** (own row in `claude agents`); both continue independently (2.1.212+) |
+| `/subtask` | Hand a side task to an in-session subagent whose result returns to this conversation (this was `/fork`'s job before 2.1.212) |
 | `/rewind` | Restore code/conversation/both to a checkpoint (also `Esc Esc`) |
 | `/resume` / `/rename` | Resume a session / name the current one |
 | `/plan [description]` | Enter plan mode directly |
@@ -71,13 +72,13 @@ claude_code_version: "2.1.202"
 | `/add-dir <path>` | Add another directory to the workspace |
 | `/sandbox` | Toggle OS-level filesystem/network sandboxing |
 | `/statusline` / `/theme` / `/config` | UI & configuration (`/config key=value` works since 2.1.181) |
-| `/doctor` / `/debug` | Diagnose install / session issues |
+| `/doctor` (alias `/checkup`) / `/debug` | Full setup checkup that diagnoses **and can fix** issues — installs, PATH, settings, unused skills/MCP/plugins vs. context cost, slow hooks (2.1.205+) / troubleshoot session issues |
 | `/install-github-app` | Set up GitHub Actions integration interactively |
 | `/teleport` / `/remote-control` | Pull a web session into the terminal / control this session from another device |
 | `/security-review` / `/review [PR]` / `/code-review` / `/simplify` / `/verify` | Review & verification skills — see [Chapter 8](08-skills.md#bundled-skills-built-into-claude-code) |
 | `/loop` / `/deep-research` / `/batch` | Recurring prompts / bundled research workflow / parallel changes |
 
-Removed/renamed since early 2026: the `/checkpoints` command is gone (use `/rewind`); conversation forking moved from `/fork` to `/branch`; `/simplify` became cleanup-only (bug hunting = `/code-review`); as of 2.1.202 `/review <pr>` is single-pass again — use `/code-review <level> <PR#>` for multi-agent PR review.
+Removed/renamed since early 2026: the `/checkpoints` command is gone (use `/rewind`); `/fork` changed meaning **twice** — mid-2026 it briefly meant "hand off to a subagent" (conversation forking was `/branch`-only), and since 2.1.212 `/fork` copies the conversation into a background session while the subagent hand-off became `/subtask`; `/simplify` became cleanup-only (bug hunting = `/code-review`); as of 2.1.202 `/review <pr>` is single-pass again — use `/code-review <level> <PR#>` for multi-agent PR review.
 
 ## CLI Flags Worth Knowing
 
@@ -98,18 +99,20 @@ Removed/renamed since early 2026: the `/checkpoints` command is gone (use `/rewi
 | `--settings <file>` / `--mcp-config <file>` / `--plugin-dir <path>` | Sideload configuration |
 | `--teammate-mode auto\|in-process\|tmux\|iterm2` | Agent-team display mode |
 | `claude agents [--json]` | Dashboard of parallel background sessions |
+| `claude --ax-screen-reader` | Screen-reader mode: plain-text rendering (2.1.208+; also `CLAUDE_AX_SCREEN_READER=1` or `"axScreenReader": true` in settings) |
+| `claude auto-mode reset [--yes]` | Restore the default auto-mode configuration (2.1.212+) |
 | `claude mcp add/list/get/remove` | Manage MCP servers from the shell |
 | `claude plugin install/uninstall [--scope]` | Manage plugins from the shell |
 
 ## Model Configuration
 
-Current aliases (Anthropic API, July 2026): `sonnet` → **Sonnet 5** (native 1M-token context), `opus` → **Opus 4.8**, `haiku` → Haiku 4.5, `fable` → **Fable 5** (most capable; not the default — select with `/model fable`), `best` (Fable 5 where your org has access, otherwise latest Opus), plus `opus[1m]`, `sonnet[1m]` (no effect when `sonnet` already resolves to Sonnet 5), and **`opusplan`** (Opus during plan mode, Sonnet for execution).
+Current aliases (Anthropic API, July 2026): `sonnet` → **Sonnet 5** (native 1M-token context), `opus` → **Opus 5** (`claude-opus-5`, 2.1.219+; 1M context, supports fast mode), `haiku` → Haiku 4.5, `fable` → **Fable 5** (most capable; not the default — select with `/model fable`), `best` (Fable 5 where your org has access, otherwise latest Opus), plus `opus[1m]`, `sonnet[1m]` (no effect when `sonnet` already resolves to Sonnet 5), and **`opusplan`** (Opus during plan mode, Sonnet for execution). On other providers `opus` resolves lower: Opus 5 on Claude Platform on AWS / Bedrock / Google Cloud's Agent Platform, **Opus 4.6 on Microsoft Foundry**; `sonnet` is Sonnet 4.6 on Claude Platform on AWS and Sonnet 4.5 on Bedrock / Agent Platform / Foundry.
 
-**The default model depends on your account type:** Sonnet 5 for Pro, Team Standard, and Enterprise subscription seats; **Opus 4.8** for Max, Team Premium, Enterprise pay-as-you-go, and Anthropic API accounts; Sonnet 4.5 on Bedrock / Google Cloud's Agent Platform / Foundry.
+**The default model depends on your account type:** Sonnet 5 for Pro, Team Standard, and Enterprise subscription seats; **Opus 5** for Max, Team Premium, Enterprise pay-as-you-go, and Anthropic API accounts, and on Claude Platform on AWS / Bedrock / Google Cloud's Agent Platform (before 2.1.219 these defaulted to Opus 4.8).
 
 - `/model` switches and saves as your default; press `s` in the picker for session-only.
 - `/effort` adjusts reasoning depth (`ultracode` also enables automatic workflow orchestration — see [Chapter 10](10-agent-teams-networks.md)).
-- `/fast` toggles fast mode (faster Opus output — same intelligence tier).
+- `/fast` toggles fast mode (faster Opus output — same intelligence tier). Applies to **Opus 5 and Opus 4.8**; Opus 4.7 was removed from fast mode in 2.1.219.
 - Subagent cost control: `CLAUDE_CODE_SUBAGENT_MODEL` (see [Chapter 9](09-subagents.md)).
 - Enterprise: `availableModels` + `enforceAvailableModels` restrict the picker; `fallbackModel` (chain of up to 3) covers overload.
 

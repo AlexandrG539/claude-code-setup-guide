@@ -5,8 +5,8 @@ read_when:
   - "heavy exploration or log-reading floods the main context"
   - "looking up subagent frontmatter fields or troubleshooting unused agents"
 topics: [subagents, agents, delegation, frontmatter, worktree-isolation, templates]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 9: Subagents — Isolated Workers
@@ -69,7 +69,16 @@ Field notes (all verified against official docs):
 
 ## Nested Subagents
 
-A subagent whose `tools` includes `Agent` can spawn its own subagents (nesting up to 5 levels, since 2.1.172). For a main-thread agent launched with `claude --agent`, `Agent(worker, researcher)` syntax allowlists which types it may spawn; inside a subagent definition the type list is ignored — listing `Agent` simply enables nesting.
+A subagent whose `tools` includes `Agent` can spawn its own subagents, by default **up to three layers below the main conversation**. At the depth limit the `Agent` tool is withheld, so the deepest subagent does its work itself and returns one summary. Change the limit with the `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` env var (2.1.217+; set `1` to turn nesting off). History: from 2.1.172 through 2.1.216 nesting was fixed at up to five layers; 2.1.217 briefly disabled it by default before 2.1.219 settled on the three-layer default.
+
+For a main-thread agent launched with `claude --agent`, `Agent(worker, researcher)` syntax allowlists which types it may spawn; inside a subagent definition the type list is ignored — listing `Agent` simply enables nesting.
+
+## Session Limits
+
+Two more caps bound runaway delegation (both official):
+
+- **Per-session total:** at most **200 subagents per session** (2.1.212+). Raise with `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`; `/clear` resets the budget. Nested subagents, forks, and background subagents all count; agents spawned by a workflow script's `agent()` don't (workflows have their own per-run limit).
+- **Concurrency:** at most **20 subagents running at once** (2.1.217+). Override with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`; sessions with `ultracode` active are exempt.
 
 ## Invocation Methods
 

@@ -5,8 +5,8 @@ read_when:
   - "setting up IDE integration (VS Code, Cursor, JetBrains)"
   - "scripting Claude Code non-interactively (claude -p)"
 topics: [ide, vscode, jetbrains, github-actions, ci-cd, headless]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 13: Editor Integration & CI/CD

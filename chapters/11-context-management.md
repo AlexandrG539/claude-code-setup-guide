@@ -4,8 +4,8 @@ read_when:
   - "sessions run long or hit context pressure"
   - "configuring Claude Code for a large codebase"
 topics: [context-management, compact, checkpoints, rewind, optimization]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 11: Context Management Strategy

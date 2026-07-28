@@ -5,8 +5,8 @@ read_when:
   - "building programmatic agents or CI bots with the Agent SDK"
   - "connecting agents across tools or vendors (MCP, A2A)"
 topics: [agent-teams, workflows, ultracode, background-agents, agent-sdk, a2a, orchestration]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 10: Agent Teams, Workflows & Multi-Agent Networks
@@ -20,7 +20,7 @@ Claude Code now has four native ways to run multi-agent work, plus external inte
 | What it is | Workers Claude spawns in-session | Independent parallel sessions | Peer sessions with a lead, shared tasks, messaging | A script the runtime executes |
 | Who decides next step | Claude, turn by turn | You (dispatch) | The lead agent | The script |
 | Workers talk to each other | No — report to caller only | No | **Yes** — mailbox + shared task list | No — results flow through script variables |
-| Scale | A few per turn (nesting to 5 levels) | As many sessions as you dispatch | ~3–5 teammates typical | Dozens–hundreds of agents per run |
+| Scale | A few per turn (nesting to 3 levels by default; 20 concurrent / 200 per session) | As many sessions as you dispatch | ~3–5 teammates typical | Dozens–hundreds of agents per run |
 | Token cost | Low (summaries return) | Per-session | High (each teammate is a full session) | High but bounded (16 concurrent, 1,000/run caps) |
 
 ---
@@ -88,7 +88,7 @@ A **workflow** is a JavaScript script that orchestrates subagents at scale — C
 
 **Safety/cost:** workflow subagents always run in `acceptEdits` mode and inherit your tool allowlist; shell/web/MCP calls outside the allowlist still prompt. Caps: ~16 concurrent agents, 1,000 per run. Gauge spend on a small slice first. Disable org-wide with `disableWorkflows` if needed.
 
-**Size guideline (v2.1.202+):** the **Dynamic workflow size** setting in `/config` caps the scale Claude aims for when writing workflow scripts: `unrestricted` (default), `small` (<5 agents), `medium` (<15), `large` (<50). It is sent to Claude as advice — an explicit prompt still overrides it, and the runtime caps above always apply. Changes take effect on the next prompt.
+**Size guideline (v2.1.202+):** the **Dynamic workflow size** setting in `/config` caps the scale Claude aims for when writing workflow scripts: `small` (<5 agents), `medium` (<15 — the **default since 2.1.219**, previously `unrestricted`), `large` (<50), `unrestricted`. It is sent to Claude as advice — an explicit prompt still overrides it, and the runtime caps above always apply. Changes take effect on the next prompt. Since 2.1.219 the guideline can also be set from any settings file via the `workflowSizeGuideline` key (the `/config` row is hidden while one is set), and the running-workflow status line shows the current size.
 
 ---
 
@@ -148,7 +148,7 @@ Anthropic has not (as of July 2026) shipped native A2A support in Claude Code; i
 - [Dynamic workflows (official)](https://code.claude.com/docs/en/workflows)
 - [Agent view / background agents (official)](https://code.claude.com/docs/en/agent-view)
 - [Claude Agent SDK (official)](https://code.claude.com/docs/en/agent-sdk/overview)
-- [Claude Code changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) (2.1.154–2.1.202)
+- [Claude Code changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) (2.1.154–2.1.220)
 - [Linux Foundation: A2A surpasses 150 organizations](https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year) · [A2A one-year report (AIwire, Apr 2026)](https://www.hpcwire.com/aiwire/2026/04/09/linux-foundation-a2a-protocol-marks-one-year-with-broad-enterprise-and-cloud-adoption/)
 
 **Next:** [Chapter 11: Context Management →](11-context-management.md)

@@ -1,7 +1,7 @@
 # Claude Code: Complete Configuration Guide (July 2026)
 
 > A comprehensive, tech-stack-agnostic guide for configuring Claude Code from scratch — written to be **executed by a Claude agent** as well as read by humans (see [For Agents](#for-agents-self-configuration-procedure)).
-> Verified against official Anthropic documentation, the official changelog, and live package registries on **2026-07-07** (Claude Code **2.1.202**; default model is **Claude Sonnet 5** on Pro/Team Standard/Enterprise seats, **Opus 4.8** on Max/Team Premium/API accounts).
+> Verified against official Anthropic documentation, the official changelog, and live package registries on **2026-07-28** (Claude Code **2.1.220**; default model is **Claude Sonnet 5** on Pro/Team Standard/Enterprise seats, **Opus 5** on Max/Team Premium/API accounts).
 
 The guide is split into chapters. Each chapter's YAML frontmatter states what it covers, when to read it, and the version it was verified against. Machine-readable index: [`llms.txt`](llms.txt).
 
@@ -94,18 +94,37 @@ mkdir -p ~/.claude/skills/self-configure && curl -s https://raw.githubuserconten
 4. Add the auto-format + branch-protection hooks → [Ch. 7](chapters/07-hooks.md)
 5. Learn three habits: **plan mode** (`Shift+Tab`) before non-trivial changes, `/code-review` before PRs, `/rewind` instead of fighting a broken state → [Ch. 4](chapters/04-permissions.md), [Ch. 8](chapters/08-skills.md), [Ch. 11](chapters/11-context-management.md)
 
+## What's New in the July 28, 2026 Update (2.1.203–2.1.220)
+
+Re-verified against the official changelog and current docs on 2026-07-28. Meaningful changes:
+
+| Area | Change | See |
+|------|--------|-----|
+| **Claude Opus 5** | `opus` now resolves to **Opus 5** (`claude-opus-5`, 2.1.219): 1M context, fast mode support. Default model for Max/Team Premium/API accounts and on Claude Platform on AWS / Bedrock / Google Agent Platform | [Ch. 15](chapters/15-reference.md#model-configuration) |
+| **`/fork` → background session** | Since 2.1.212 `/fork` copies the conversation into an independent **background session**; the in-session subagent hand-off is now **`/subtask`**; `/branch` remains the in-session fork | [Ch. 15](chapters/15-reference.md), [Ch. 12](chapters/12-monorepo-parallel.md) |
+| **Subagent limits** | Nesting defaults to **3 levels** (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, 2.1.217+; was a fixed 5 levels through 2.1.216); new caps: 200 spawns/session (2.1.212), 20 concurrent (2.1.217) | [Ch. 9](chapters/09-subagents.md) |
+| **Workflow size default** | Dynamic workflow size guideline defaults to **`medium`** (<15 agents) since 2.1.219 (was `unrestricted`); settable via the `workflowSizeGuideline` settings key | [Ch. 10](chapters/10-agent-teams-networks.md) |
+| **Permissions (2.1.214)** | Single-segment `Edit(dir/**)` **allow** rules now match only `<cwd>/dir` (use `**/dir/**` for any depth; deny/ask keep any-depth match); commands >10,000 chars always prompt | [Ch. 4](chapters/04-permissions.md) |
+| **Auto mode GA on all major providers** | No `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in needed since 2.1.207 (Bedrock, Agent Platform, Foundry); no longer a research preview; new `claude auto-mode reset` | [Ch. 4](chapters/04-permissions.md) |
+| **Sandbox settings** | `sandbox.filesystem.disabled` (2.1.216), `sandbox.network.strictAllowlist` (2.1.219) | [Ch. 4](chapters/04-permissions.md) |
+| **Skills** | `context: fork` skills run in the **background by default** (2.1.218, opt out with `background: false`); boolean frontmatter accepts `yes/no/on/off/1/0`; `/verify`, `/code-review`, `/deep-research` are no longer auto-invoked by Claude (2.1.215/2.1.218) | [Ch. 8](chapters/08-skills.md) |
+| **Hooks** | `SessionStart` gained the `fork` matcher (2.1.214); new `DirectoryAdded` event after `/add-dir` (2.1.219) | [Ch. 7](chapters/07-hooks.md) |
+| **MCP** | Tool calls >2 min auto-background (`CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`, 2.1.212); `/mcp` / `claude mcp list` show HTTP status on connection failures (2.1.219) | [Ch. 6](chapters/06-mcp.md) |
+| **Worktree approvals** | "Always allow" grants save at the repository root and persist across worktrees (2.1.211) | [Ch. 4](chapters/04-permissions.md) |
+| **`/doctor` = full checkup** | Diagnoses **and fixes** setup issues; alias `/checkup` (2.1.205); also new: screen-reader mode (`--ax-screen-reader`, 2.1.208) | [Ch. 15](chapters/15-reference.md) |
+
 ## What's New Since the May 2026 Revision
 
 This revision was produced by re-verifying every claim against official sources (July 3–7, 2026). Meaningful changes:
 
 | Area | Change | See |
 |------|--------|-----|
-| **Default model** | Claude Sonnet 5 became the default in 2.1.197 (native 1M-token context window); the default is account-dependent — Opus 4.8 on Max/Team Premium/API. Fable 5 available via `/model fable`; new `best` alias | [Ch. 15](chapters/15-reference.md#model-configuration) |
+| **Default model** | Claude Sonnet 5 became the default in 2.1.197 (native 1M-token context window); the default is account-dependent — now **Opus 5** on Max/Team Premium/API (2.1.219). Fable 5 available via `/model fable`; new `best` alias | [Ch. 15](chapters/15-reference.md#model-configuration) |
 | **MCP tool search** | MCP tool definitions are deferred by default — old "keep 5–10 servers max / 80 tools" budget advice is obsolete | [Ch. 6](chapters/06-mcp.md) |
-| **Subagents** | Run in **background by default** (2.1.198); nested subagents up to 5 levels (2.1.172); `/agents` wizard removed; field is `permissionMode` (camelCase); many new frontmatter fields | [Ch. 9](chapters/09-subagents.md) |
+| **Subagents** | Run in **background by default** (2.1.198); nesting now defaults to 3 levels with new session caps — see the July 28 update below; `/agents` wizard removed; field is `permissionMode` (camelCase); many new frontmatter fields | [Ch. 9](chapters/09-subagents.md) |
 | **Agent teams** | Simplified implicit-team model (2.1.178) — no TeamCreate/TeamDelete; still experimental behind `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | [Ch. 10](chapters/10-agent-teams-networks.md) |
 | **Dynamic workflows** | New in 2.1.154: `ultracode`, `/workflows`, `/deep-research`, saved workflows in `.claude/workflows/` | [Ch. 10](chapters/10-agent-teams-networks.md) |
-| **Commands renamed** | `/simplify` → `/code-review` for bug review (2.1.147; `/simplify` reintroduced as cleanup-only in 2.1.154); conversation forking is now `/branch` (`/fork` = hand-off to background subagent); `/checkpoints` removed (use `/rewind`) | [Ch. 15](chapters/15-reference.md) |
+| **Commands renamed** | `/simplify` → `/code-review` for bug review (2.1.147; `/simplify` reintroduced as cleanup-only in 2.1.154); `/checkpoints` removed (use `/rewind`); `/fork` semantics changed again in 2.1.212 — see the July 28 update below | [Ch. 15](chapters/15-reference.md) |
 | **New commands** | `/cd`, `/usage` (`/cost`,`/stats`), `/plan`, `/effort` (incl. `ultracode`), `/fast`, `/recap`, `/btw`, `/teleport`, `/reload-skills`, `/install-github-app` | [Ch. 15](chapters/15-reference.md) |
 | **Permissions** | `Tool(param:value)` parameter-matching rules (2.1.178); tool-name glob deny rules (2.1.166); documented wrapper-stripping and compound-command semantics | [Ch. 4](chapters/04-permissions.md) |
 | **Worktrees & background agents** | Native `claude -w` worktrees; `claude agents` dashboard; background agents auto-commit/push/draft-PR (2.1.198) | [Ch. 12](chapters/12-monorepo-parallel.md) |

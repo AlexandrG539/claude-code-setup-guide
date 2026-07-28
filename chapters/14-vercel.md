@@ -3,8 +3,8 @@ description: "Vercel integration: Vercel agent skills, the official MCP server, 
 read_when:
   - "the project deploys to Vercel"
 topics: [vercel, deployment, nextjs, mcp]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 14: Vercel Integration — Skills, MCP & Deployment

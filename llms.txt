@@ -1,6 +1,6 @@
 # Claude Code: Complete Configuration Guide
 
-> Tech-stack-agnostic guide for configuring Claude Code from scratch, written to be executed by a Claude agent performing project self-configuration. Every claim verified against official Anthropic docs, the official changelog, and live package registries on 2026-07-07 (Claude Code 2.1.202). Each chapter carries YAML frontmatter with `description`, `read_when`, `verified`, and `claude_code_version`.
+> Tech-stack-agnostic guide for configuring Claude Code from scratch, written to be executed by a Claude agent performing project self-configuration. Every claim verified against official Anthropic docs, the official changelog, and live package registries on 2026-07-28 (Claude Code 2.1.220). Each chapter carries YAML frontmatter with `description`, `read_when`, `verified`, and `claude_code_version`.
 
 Procedure and boundaries for agents: see "For Agents: Self-Configuration Procedure" in the README. Core chapters (1, 2, 4, 7) apply to every project; read the rest only when their condition matches. All files are UTF-8 markdown, under 500 lines, one level deep from this index.
 

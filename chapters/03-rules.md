@@ -5,8 +5,8 @@ read_when:
   - "CLAUDE.md is growing past ~60 lines and needs splitting"
   - "different rules should apply to different paths"
 topics: [rules, path-scoped-rules, coding-standards, glob-patterns]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 3: Rules — Modular Guidelines

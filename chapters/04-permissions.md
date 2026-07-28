@@ -3,8 +3,8 @@ description: "Permission rules (allow/ask/deny syntax, evaluation order, compoun
 read_when:
   - "always — core chapter, set permissions before installing anything"
 topics: [permissions, permission-modes, plan-mode, auto-mode, sandbox, settings-json]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 4: Permissions, Permission Modes & Sandboxing
@@ -74,6 +74,8 @@ Subtleties worth knowing (all official):
 - Claude Code splits compound commands on `&&`, `||`, `;`, `|`, `|&`, `&`, newlines — a rule must match **each** subcommand independently, so `Bash(safe-cmd *)` doesn't approve `safe-cmd && rm -rf .`.
 - Process wrappers `timeout`, `time`, `nice`, `nohup`, `stdbuf` (and bare `xargs`) are stripped before matching. Environment runners (`npx`, `docker exec`, `devbox run`, …) are **not** — `Bash(devbox run *)` would match `devbox run rm -rf .`, so write rules that include the inner command.
 - Argument-constraining patterns like `Bash(curl http://github.com/ *)` are fragile (options, redirects, variables bypass them). Prefer: deny `curl`/`wget` and allow `WebFetch(domain:...)`, or use a PreToolUse hook.
+- Since 2.1.214, a single-segment `dir/**` **allow** rule like `Edit(src/**)` matches only `<cwd>/src` — write `Edit(**/src/**)` for any-depth matching. `deny`/`ask` rules keep their any-depth match, so denies stay broad.
+- Bash commands over 10,000 characters always prompt instead of matching allow rules (2.1.214).
 - `Read`/`Edit` rules apply to Claude's file tools and recognized file commands (`cat`, `sed`, …), **not** to arbitrary subprocesses (a Python script opening a file). For OS-level enforcement use the [sandbox](#sandboxing).
 
 ## Permission Strategy
@@ -87,7 +89,7 @@ Subtleties worth knowing (all official):
 ### User-Local vs Project Permissions
 
 - **`.claude/settings.json`** (committed) — project-wide rules shared with the team.
-- **`.claude/settings.local.json`** (gitignored) — personal approvals accumulated during sessions ("Yes, don't ask again").
+- **`.claude/settings.local.json`** (gitignored) — personal approvals accumulated during sessions ("Yes, don't ask again"). Since 2.1.211 these "always allow" approvals are saved at the **repository root**, so a grant made inside a git worktree persists across sessions and other worktrees of the same repo.
 
 Review both anytime with `/permissions` — the UI shows every rule and which file it came from.
 
@@ -100,7 +102,7 @@ Cycle modes with **Shift+Tab**, start with `claude --permission-mode <mode>`, or
 | `default` | Prompts on first use of each tool. Labeled **Manual** in the CLI and IDE extensions; `manual` is accepted as an alias (v2.1.200+) |
 | `acceptEdits` | Auto-accepts file edits and common filesystem commands in the working directory |
 | `plan` | **Plan mode**: Claude reads files and runs read-only commands but doesn't edit anything |
-| `auto` | Auto-approves with a background safety classifier; risky actions are **blocked** (Claude gets the reason and tries an alternative), not prompted (research preview) |
+| `auto` | Auto-approves with a background safety classifier; risky actions are **blocked** (Claude gets the reason and tries an alternative), not prompted |
 | `dontAsk` | Auto-denies anything not pre-approved via allow rules |
 | `bypassPermissions` | Skips prompts (except explicit `ask` rules, the `rm -rf /` / `rm -rf ~` circuit breaker, and — since v2.1.199 — MCP tools marked `requiresUserInteraction`). Only for isolated containers/VMs |
 
@@ -114,7 +116,9 @@ Plan mode is one of the highest-leverage workflow habits: for any non-trivial ch
 
 ### Auto mode
 
-`auto` mode uses a classifier to review each tool call. On risk (scope escalation, unknown infrastructure, suspicious content-driven actions) it **blocks** the action — Claude receives the reason and tries an alternative. Explicit `ask` rules still prompt, and if the classifier blocks 3 actions in a row or 20 total, auto mode pauses and normal prompting resumes. Org admins can disable the mode with `permissions.disableAutoMode`. Inspect the classifier's rules with `claude auto-mode defaults`.
+`auto` mode uses a classifier to review each tool call. On risk (scope escalation, unknown infrastructure, suspicious content-driven actions) it **blocks** the action — Claude receives the reason and tries an alternative. Explicit `ask` rules still prompt, and if the classifier blocks 3 actions in a row or 20 total, auto mode pauses and normal prompting resumes. Org admins can disable the mode with `permissions.disableAutoMode`. Inspect the classifier's rules with `claude auto-mode defaults`; restore the default configuration with `claude auto-mode reset` (2.1.212+).
+
+Availability notes (all official): since 2.1.207 auto mode is available **by default** on the Anthropic API, Claude Platform on AWS, Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry — the old `CLAUDE_CODE_ENABLE_AUTO_MODE=1` opt-in is no longer needed (the variable is accepted but has no effect). On Team/Enterprise an Owner must first enable it in admin settings. `defaultMode: "auto"` is honored only from user or managed settings — repo-resident files (`.claude/settings.json`, `.claude/settings.local.json`) cannot grant auto mode.
 
 ## Sandboxing
 
@@ -123,6 +127,7 @@ Permissions and sandboxing are complementary: permissions control what Claude *m
 - Toggle per session with `/sandbox`; configure via the `sandbox` settings key.
 - With `autoAllowBashIfSandboxed: true` (default when sandboxing is on), sandboxed Bash runs without prompting — the sandbox boundary replaces the prompt.
 - Sandbox filesystem rules merge with your `Read`/`Edit` deny rules; network rules merge with `WebFetch(domain:...)` rules.
+- `sandbox.filesystem.disabled: true` (2.1.216+) keeps network egress control while skipping filesystem isolation; `sandbox.network.strictAllowlist: true` (2.1.219+) denies non-allowlisted hosts outright instead of prompting.
 
 ## Hooks as a permission layer
 

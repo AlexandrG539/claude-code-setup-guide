@@ -5,8 +5,8 @@ read_when:
   - "a CLAUDE.md section has grown into a procedure rather than a fact"
   - "looking up bundled skills or SKILL.md frontmatter fields"
 topics: [skills, slash-commands, skill-md, frontmatter, templates]
-verified: 2026-07-07
-claude_code_version: "2.1.202"
+verified: 2026-07-28
+claude_code_version: "2.1.220"
 ---
 
 # Chapter 8: Skills & Slash Commands
@@ -49,7 +49,8 @@ description: |
 allowed-tools: Read, Grep, Bash(git add *)   # PRE-APPROVES these tools while the skill is active
 # disallowed-tools: AskUserQuestion  # REMOVES tools from the pool while the skill is active
 # model: sonnet                      # Override model for this skill
-# context: fork                      # Run in an isolated subagent context
+# context: fork                      # Run in an isolated subagent context (in the background by default since 2.1.218)
+# background: false                  # Opt a context: fork skill back into foreground execution (2.1.218+)
 # agent: code-reviewer               # Which subagent type to use with context: fork
 # disable-model-invocation: true     # Only YOU can invoke (manual /name); description stays out of context
 # user-invocable: false              # Only CLAUDE can invoke; hidden from the / menu
@@ -76,6 +77,8 @@ Invocation control matrix:
 
 Use `disable-model-invocation: true` for workflows with side effects you want to time yourself (`/deploy`, `/commit`). Use `user-invocable: false` for background knowledge that isn't a meaningful user action.
 
+Boolean frontmatter fields accept `yes`/`no`/`on`/`off`/`1`/`0` (case-insensitive) alongside `true`/`false` since 2.1.218.
+
 ## Arguments & Substitutions
 
 | Variable | Description |
@@ -99,19 +102,21 @@ A line like `` !`git diff HEAD` `` in the skill body is executed **before** Clau
 
 | Command | Kind | What It Does |
 |---------|------|-------------|
-| `/code-review [target] [low\|medium\|high\|xhigh\|max\|ultra] [--fix] [--comment]` | Skill | Review the current diff (or a target) for correctness bugs and cleanups; `--fix` applies findings; `ultra` runs a multi-agent cloud review |
+| `/code-review [target] [low\|medium\|high\|xhigh\|max\|ultra] [--fix] [--comment]` | Skill | Review the current diff (or a target) for correctness bugs and cleanups; `--fix` applies findings; `ultra` runs a multi-agent cloud review. Runs as a background subagent since 2.1.218, so the review doesn't fill your conversation |
 | `/simplify` | Skill | Cleanup-only review (reuse, simplification, efficiency) that applies fixes — since 2.1.154 it does **not** hunt for bugs |
 | `/review [PR]` | Built-in command | Review a GitHub pull request (same engine as `/code-review`) |
 | `/security-review` | Built-in command | Deeper read-only security pass on pending changes |
 | `/verify` | Skill | Exercise a change end-to-end to confirm it works |
 | `/debug` | Skill | Enable debug logging and troubleshoot session issues |
 | `/loop [interval] [prompt]` | Skill | Run a prompt repeatedly (self-paced if no interval) |
-| `/deep-research <question>` | Bundled workflow | Multi-agent research workflow (see [Chapter 10](10-agent-teams-networks.md)) |
+| `/deep-research <question>` | Bundled workflow | Multi-agent research workflow (see [Chapter 10](10-agent-teams-networks.md)) — manual invocation only since 2.1.218 |
 | `/batch` | Skill | Large-scale parallel changes across worktrees |
 | `/fewer-permission-prompts` | Skill | Analyze transcripts and propose a permission allowlist |
 | `/init` | Built-in command | Generate or refine CLAUDE.md |
 
 (Not exhaustive — other bundled skills include `/run`, `/dataviz`, and `/claude-api`, and availability depends on plan/platform. Type `/` to see what you have; the [commands reference](https://code.claude.com/docs/en/commands) is the authoritative list.)
+
+Note: since 2.1.215 Claude no longer runs `/verify` or `/code-review` on its own — invoke them explicitly when you want them (same for `/deep-research` since 2.1.218).
 
 ## Installing Community Skills
 
